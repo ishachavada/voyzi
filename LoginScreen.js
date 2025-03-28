@@ -1,25 +1,43 @@
 import React, { useState } from 'react';
 import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert 
 } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { app } from './firebaseConfig'; 
+
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  
-  const auth = getAuth(app);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert('Login Successful');
-      navigation.navigate('Home');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Fetch user details from Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log('User Data:', userData);
+
+        // Redirect to HomeScreen with user details
+        navigation.navigate('Home', { user: userData });
+      } else {
+        Alert.alert('Error', 'User data not found in Firestore');
+      }
     } catch (error) {
       Alert.alert('Login Failed', error.message);
     }
@@ -52,16 +70,8 @@ const LoginScreen = () => {
         />
       </View>
 
-
-
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>SIGN IN</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.orText}>OR</Text>
-
-      <TouchableOpacity style={styles.socialButton}>
-        <Text style={styles.socialButtonText}>Login with Google</Text>
       </TouchableOpacity>
 
       <View style={styles.signupContainer}>
@@ -81,11 +91,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -118,19 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
   },
-  rememberMeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 20,
-  },
-  rememberMeText: {
-    color: '#888',
-  },
-  forgotPasswordText: {
-    color: '#007BFF',
-  },
   loginButton: {
     alignItems: 'center',
     backgroundColor: '#007BFF',
@@ -142,35 +134,6 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  orText: {
-    color: '#888',
-    marginBottom: 20,
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    width: '100%',
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  socialIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  socialButtonText: {
-    color: '#888',
     fontSize: 16,
     fontWeight: '600',
   },

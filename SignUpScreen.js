@@ -45,7 +45,7 @@
 //         onChangeText={setEmail}
 //         keyboardType="email-address"
 //       />
-      
+
 //       <TextInput
 //         style={styles.input}
 //         placeholder="Password"
@@ -103,20 +103,37 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import { app } from './firebaseConfig';  
+import { app } from './firebaseConfig';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Attendee'); // Default role is Attendee
+  const [role, setRole] = useState('Attendee');
 
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
   const handleSignUp = async () => {
+    if (!username || !email || !password) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Store user details in Firestore under "users" collection
+      await setDoc(doc(db, 'users', user.uid), {
+        username,
+        email,
+        role,
+        createdAt: new Date().toISOString(),
+      });
+
       Alert.alert('Account created successfully!');
       navigation.navigate('LoginScreen');
     } catch (error) {
@@ -142,7 +159,7 @@ const SignUpScreen = () => {
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-      
+
       <TextInput
         style={styles.input}
         placeholder="Password"
