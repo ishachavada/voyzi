@@ -168,7 +168,6 @@ const SignUpScreen = () => {
         secureTextEntry
       />
 
-      {/* Custom Checkbox for Role Selection */}
       <View style={styles.checkboxContainer}>
         <TouchableOpacity onPress={() => setRole('Attendee')} style={styles.checkbox}>
           <Text style={{ fontSize: 18 }}>{role === 'Attendee' ? '✅' : '⬜'}</Text>

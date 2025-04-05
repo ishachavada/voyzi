@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert 
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert
 } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { app } from './firebaseConfig'; 
+import { app } from './firebaseConfig';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -26,7 +26,6 @@ const LoginScreen = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Fetch user details from Firestore
       const userDoc = await getDoc(doc(db, 'users', user.uid));
 
       if (userDoc.exists()) {
@@ -36,7 +35,7 @@ const LoginScreen = () => {
         // Redirect to HomeScreen with user details
         navigation.navigate('Home', { user: userData });
       } else {
-        Alert.alert('Error', 'User data not found in Firestore');
+        Alert.alert('Error', 'User data not found');
       }
     } catch (error) {
       Alert.alert('Login Failed', error.message);
@@ -73,6 +72,11 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>SIGN IN</Text>
       </TouchableOpacity>
+
+      {/* <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+        <Text style={styles.googleButtonText}>Login with Google</Text>
+      </TouchableOpacity> */}
+
 
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
