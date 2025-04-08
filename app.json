@@ -3,8 +3,15 @@
     "name": "VOYZI",
     "slug": "VOYZI",
     "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "newArchEnabled": true,
+        "updates": {
+      "enabled": false
+    }
   }
 }

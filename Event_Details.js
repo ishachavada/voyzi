@@ -1,186 +1,208 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import AppText from './AppText';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 const EventDetails = () => {
-  const event = {
-    name: 'Indie Vibes Night',
-    date: {
-      day: '20',
-      month: 'April',
-      year: '2025',
-    },
-    location: 'Jaipur Music Arena',
-    details:
-      'Join us for an unforgettable evening filled with indie vibes, live performances, and good company. Discover rising artists and immerse yourself in soulful tunes under the stars.',
-    image: require('./assets/images/eventdetails.jpg'),
-    organizedBy: 'Jaipur Indie Club',
-  };
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const event = route?.params?.event || {};
+
+  const isHouseFull = event.ticketCount <= 0;
+
+  const eventDate = event.startDate?.toDate ? event.startDate.toDate() : new Date();
+  const formattedDate = eventDate.toDateString();
+  const formattedTime = eventDate.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  if (!event || Object.keys(event).length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ padding: 20, fontSize: 18 }}>Event data not found. Please try again.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
-        {/* Event Image */}
-        <Image source={event.image} style={styles.eventImage} />
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>VOYZI</Text>
+      </View>
 
-        <View style={{ height: 16 }} />
-
-        {/* Name + Location + Date */}
-        <View style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <View style={{ flex: 1 }}>
-              <AppText weight="bold" style={styles.eventName}>{event.name}</AppText>
-              <AppText style={styles.eventLocation}>{event.location}</AppText>
-            </View>
-
-            <View style={styles.dateBox}>
-              <AppText weight="bold" style={styles.dateDay}>{event.date.day}</AppText>
-              <AppText style={styles.dateMonth}>{event.date.month}</AppText>
-              <AppText style={styles.dateYear}>{event.date.year}</AppText>
-            </View>
+      <View style={styles.imageContainer}>
+        <Image
+          source={
+            event.imageUrl
+              ? { uri: event.imageUrl }
+              : require('./assets/images/event1.jpg')
+          }
+          style={styles.eventImage}
+        />
+        {isHouseFull && (
+          <View style={styles.houseFullOverlay}>
+            <Text style={styles.houseFullText}>HOUSEFULL</Text>
           </View>
+        )}
+        <Text style={styles.eventId}>#{event.eventId}</Text>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.title}>{event.name}</Text>
+        <Text style={styles.dateTime}>{formattedDate} at {formattedTime}</Text>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.subheading}>📍 Location</Text>
+        <Text style={styles.text}>{event.location}</Text>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.subheading}>📝 Description</Text>
+        <Text style={styles.text}>{event.description}</Text>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.subheading}>👤 Organized By</Text>
+        <Text style={styles.text}>{event.organizerName || 'Anonymous'}</Text>
+      </View>
+
+      <View style={[styles.ticketBlock, isHouseFull && { opacity: 0.6 }]}>
+        <View>
+          <Text style={styles.costText}>₹ {event.ticketCost || 'Free'}</Text>
+          <Text
+            style={[styles.ticketsLeft, { color: event.ticketCount > 1 ? 'green' : 'red' }]}
+          >
+            {event.ticketCount > 1
+              ? `${event.ticketCount} tickets available`
+              : event.ticketCount === 1
+              ? 'Only 1 ticket left'
+              : 'Sold Out'}
+          </Text>
         </View>
 
-        <View style={{ height: 16 }} />
-
-        {/* Details */}
-        <View style={styles.detailsCard}>
-          <AppText weight="bold" style={styles.detailsHeader}>Event Details</AppText>
-          <AppText style={styles.detailsText}>{event.details}</AppText>
-        </View>
-
-        {/* Organized By */}
-        <View style={styles.organizerCard}>
-          <AppText style={styles.organizerLabel}>Organized by:</AppText>
-          <AppText weight="bold" style={styles.organizerName}>{event.organizedBy}</AppText>
-        </View>
-      </ScrollView>
-
-      {/* RSVP Button */}
-      <TouchableOpacity style={styles.rsvpButton}>
-        <AppText weight="bold" style={styles.rsvpButtonText}>RSVP</AppText>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          disabled={isHouseFull}
+          style={[styles.bookNowBtn, isHouseFull && { backgroundColor: '#999' }]}
+          onPress={() => navigation.navigate('BookingScreen', { eventData: event })}
+        >
+          <Text style={styles.bookNowText}>
+            {isHouseFull ? 'Sold Out' : 'Book Now'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
+
+const screenWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
+  },
+  header: {
+    height: 50,
+    backgroundColor: '#007bff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1.5,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 220,
+    position: 'relative',
   },
   eventImage: {
     width: '100%',
-    height: 350,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    opacity: 0.8,
+    height: '100%',
   },
-  infoCard: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  infoHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  houseFullOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  eventName: {
-    fontSize: 25,
-    color: 'black',
-    flexWrap: 'wrap',
-    maxWidth: '70%',
+  houseFullText: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
+    backgroundColor: 'red',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
-  eventLocation: {
-    fontSize: 14,
+  eventId: {
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    backgroundColor: '#000',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+  },
+  block: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+  },
+  dateTime: {
+    fontSize: 16,
     color: '#666',
     marginTop: 4,
   },
-  dateBox: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 100,
-  },
-  dateDay: {
-    fontSize: 36,
-    color: '#222',
-  },
-  dateMonth: {
-    fontSize: 14,
-    color: '#555',
-  },
-  dateYear: {
-    fontSize: 12,
-    color: '#888',
-  },
-  detailsCard: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-    minHeight: 120,
-    marginBottom: 16,
-  },
-  detailsHeader: {
-    fontSize: 25,
-    marginBottom: 8,
-    marginTop: 4,
-  },
-  detailsText: {
-    fontSize: 14,
-    color: '#444',
-    lineHeight: 22,
+  subheading: {
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 5,
   },
-  organizerCard: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 30,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+  text: {
+    fontSize: 15,
+    color: '#444',
   },
-  organizerLabel: {
-    fontSize: 14,
-    color: '#555',
-  },
-  organizerName: {
-    fontSize: 16,
-    color: '#222',
-    marginTop: 4,
-  },
-  rsvpButton: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: '#b037f5',
-    paddingVertical: 16, // more height
-    borderRadius: 50,
-    elevation: 5,
-    width: '80%',
+  ticketBlock: {
+    marginTop: 30,
+    marginHorizontal: 20,
+    marginBottom: 50,
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: '#f2f2f2',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    elevation: 3,
   },
-  
-  rsvpButtonText: {
+  costText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  ticketsLeft: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  bookNowBtn: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  bookNowText: {
     color: '#fff',
-    fontSize: 18, // bigger text
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

@@ -1,110 +1,11 @@
-// import React, { useState } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-// import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-// import { useNavigation } from '@react-navigation/native';
-// import { app } from './firebaseConfig';  // Ensure this file exists
-
-// const SignUpScreen = () => {
-//   const navigation = useNavigation();
-//   const [username, setUsername] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   const auth = getAuth(app);
-
-//   const handleSignUp = async () => {
-//     if (!username.trim()) {
-//       Alert.alert('Signup Failed', 'Please enter a valid username.');
-//       return;
-//     }
-
-//     try {
-//       await createUserWithEmailAndPassword(auth, email, password);
-//       Alert.alert('Account created successfully!');
-//       navigation.navigate('LoginScreen');
-//     } catch (error) {
-//       Alert.alert('Signup Failed', error.message);
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Sign Up</Text>
-
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Username"
-//         value={username}
-//         onChangeText={setUsername}
-//       />
-
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Email"
-//         value={email}
-//         onChangeText={setEmail}
-//         keyboardType="email-address"
-//       />
-
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Password"
-//         value={password}
-//         onChangeText={setPassword}
-//         secureTextEntry
-//       />
-
-//       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-//         <Text style={styles.signUpButtonText}>SIGN UP</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     padding: 20,
-//     backgroundColor: '#f8f8f8',
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   input: {
-//     width: '100%',
-//     padding: 10,
-//     marginBottom: 15,
-//     borderWidth: 1,
-//     borderColor: '#ccc',
-//     borderRadius: 8,
-//     backgroundColor: '#fff',
-//   },
-//   signUpButton: {
-//     backgroundColor: '#007BFF',
-//     padding: 10,
-//     borderRadius: 8,
-//     width: '100%',
-//     alignItems: 'center',
-//   },
-//   signUpButtonText: {
-//     color: '#fff',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default SignUpScreen;
-
+// ... [imports remain the same]
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { View, TextInput, TouchableOpacity, Alert, ImageBackground, SafeAreaView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { app } from './firebaseConfig';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from './firebaseConfig'; 
+import AppText from './AppText'; 
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -112,9 +13,6 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Attendee');
-
-  const auth = getAuth(app);
-  const db = getFirestore(app);
 
   const handleSignUp = async () => {
     if (!username || !email || !password) {
@@ -126,7 +24,6 @@ const SignUpScreen = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Store user details in Firestore under "users" collection
       await setDoc(doc(db, 'users', user.uid), {
         username,
         email,
@@ -142,97 +39,165 @@ const SignUpScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+    <ImageBackground
+      source={require('./assets/images/abstract-gradient-background-with-blue-circles-purple-pink-color_1332213-56306.jpg')}
+      style={styles.bgImage}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <AppText weight="bold" style={styles.subtitle}>Create Account</AppText>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="gray"
+              value={username}
+              onChangeText={setUsername}
+            />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="gray"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="gray"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-      <View style={styles.checkboxContainer}>
-        <TouchableOpacity onPress={() => setRole('Attendee')} style={styles.checkbox}>
-          <Text style={{ fontSize: 18 }}>{role === 'Attendee' ? '✅' : '⬜'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.checkboxLabel}>Attendee</Text>
+            <View style={styles.radioContainer}>
+              {['Attendee', 'Organizer'].map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  style={styles.radioOption}
+                  onPress={() => setRole(option)}
+                >
+                  <View style={styles.radioCircleOuter}>
+                    {role === option && <View style={styles.radioCircleInner} />}
+                  </View>
+                  <AppText style={styles.radioLabel}>{option}</AppText>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-        <TouchableOpacity onPress={() => setRole('Organizer')} style={styles.checkbox}>
-          <Text style={{ fontSize: 18 }}>{role === 'Organizer' ? '✅' : '⬜'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.checkboxLabel}>Organizer</Text>
-      </View>
+            <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+              <AppText weight="semibold" style={styles.signUpButtonText}>SIGN UP</AppText>
+            </TouchableOpacity>
 
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-        <Text style={styles.signUpButtonText}>SIGN UP</Text>
-      </TouchableOpacity>
-
-    </View>
+            <View style={styles.loginRedirect}>
+              <AppText style={styles.signupText}>Already have an account?</AppText>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <AppText weight="bold" style={styles.signupLink}>Sign in</AppText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  bgImage: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  safeArea: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  container: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 24,
+    borderRadius: 20,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+  },
+  subtitle: {
+    fontSize: 30,
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 30,
   },
   input: {
-    width: '100%',
-    padding: 10,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 18, // Increased height
+    color: 'black',
+    marginBottom: 16,
+    fontSize: 16,
   },
-  checkboxContainer: {
+  radioContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-around',
     marginBottom: 20,
   },
-  checkbox: {
-    marginRight: 5,
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  checkboxLabel: {
+  radioCircleOuter: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  radioCircleInner: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#00C9FF',
+  },
+  radioLabel: {
     fontSize: 16,
-    marginRight: 15,
+    color: '#fff',
   },
   signUpButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+    backgroundColor: '#00C9FF',
+    borderRadius: 10,
+    paddingVertical: 12,
+    marginTop: 10,
+    marginBottom: 20,
   },
   signUpButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  loginRedirect: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  signupText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  signupLink: {
+    color: '#00C9FF',
+    marginLeft: 6,
+    fontSize: 14,
   },
 });
 
