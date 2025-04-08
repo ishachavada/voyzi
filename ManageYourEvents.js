@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
-import { db } from './firebaseConfig';  // Import the Firebase config
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+  ImageBackground,
+  SafeAreaView,
+} from 'react-native';
+import { db } from './firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
+import AppText from './AppText';
 
 const ManageYourEvents = () => {
   const [events, setEvents] = useState([]);
@@ -25,77 +35,106 @@ const ManageYourEvents = () => {
   }, []);
 
   const handleModifyEvent = (eventId) => {
-    navigation.navigate('ModifyEvent', { eventId });  // Pass the eventId to ModifyEvent screen
+    navigation.navigate('ModifyEvent', { eventId });
   };
 
-  const renderEventItem = ({ item }) => {
-    return (
-      <View style={styles.eventBlock}>
-         <Text style={styles.Name}>{item.name}</Text> {/* Event Name */}
-         <Text style={styles.eventDescription}>{item.description}</Text> {/* Description */}
-        {/* Modify Button */}
-        <TouchableOpacity
-          style={styles.modifyButton}
-          onPress={() => handleModifyEvent(item.id)}  // Pass event ID when modifying
-        >
-          <Text style={styles.modifyButtonText}>Modify</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
+  const renderEventItem = ({ item }) => (
+    <View style={styles.eventBlock}>
+      <AppText weight="bold" style={styles.eventName}>{item.name}</AppText>
+      <AppText style={styles.eventDescription}>{item.description}</AppText>
+
+      <TouchableOpacity
+        style={styles.modifyButton}
+        onPress={() => handleModifyEvent(item.id)}
+      >
+        <AppText style={styles.modifyButtonText}>Modify</AppText>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Manage Your Events</Text>
+    <ImageBackground
+      source={require('./assets/images/wp7952942.jpg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <SafeAreaView style={styles.safeArea}>
+          <AppText weight="bold" style={styles.title}>Manage Your Events</AppText>
 
-      {/* List Events */}
-      <FlatList
-        data={events}
-        renderItem={renderEventItem}
-        keyExtractor={item => item.id}
-      />
-    </View>
+          <FlatList
+            data={events}
+            renderItem={renderEventItem}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 };
 
+export default ManageYourEvents;
+
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(237, 215, 243, 0.6)',
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    color: 'black',
     marginBottom: 20,
+    paddingTop: 15,
     textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  listContent: {
+    paddingBottom: 100,
   },
   eventBlock: {
-    backgroundColor: '#f2f2f2',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 5,
+    backgroundColor: 'rgba(70, 58, 69, 0.3)',
+    width: '100%',
+    borderRadius: 16,
+    padding: 20,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
   },
   eventName: {
-    fontSize: 40,
-    fontWeight: 'bold',
+    fontSize: 18,
+    color: 'black',
+    marginBottom: 2,
   },
   eventDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 5,
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 12,
   },
   modifyButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginTop: 10,
+    backgroundColor: 'rgb(62, 48, 71)',
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
   modifyButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: '600',
   },
 });
-
-export default ManageYourEvents;

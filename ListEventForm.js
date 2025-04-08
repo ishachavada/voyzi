@@ -1,11 +1,19 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native'; // Added TouchableOpacity import
+import React, { useState } from 'react';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { db } from './firebaseConfig';
 import { addDoc, collection } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from './context/UserContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AppText from './AppText'; 
 
 const ListEventForm = () => {
   const navigation = useNavigation();
@@ -28,7 +36,17 @@ const ListEventForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!eventName || !description || !startDate || !startTime || !location || !organizerName || !category || !seats || !cost) {
+    if (
+      !eventName ||
+      !description ||
+      !startDate ||
+      !startTime ||
+      !location ||
+      !organizerName ||
+      !category ||
+      !seats ||
+      !cost
+    ) {
       Alert.alert('Missing Fields', 'Please fill all fields');
       return;
     }
@@ -73,48 +91,68 @@ const ListEventForm = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>List New Event</Text>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
+      <AppText weight="bold" style={styles.heading}>List New Event</AppText>
 
-      <Text style={styles.label}>Event Name</Text>
-      <TextInput style={styles.input} value={eventName} onChangeText={setEventName} />
+      <View style={styles.formCard}>
 
-      <Text style={styles.label}>Description</Text>
-      <TextInput style={[styles.input, { height: 100 }]} value={description} onChangeText={setDescription} multiline />
+      <AppText style={styles.label}>Event name</AppText>
+        <TextInput style={styles.input} value={eventName} onChangeText={setEventName} />
 
-      <Text style={styles.label}>Date</Text>
-      <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.input}>
-        <Text>{startDate ? startDate.toLocaleDateString() : 'Pick Event Date'}</Text>
-      </TouchableOpacity>
+        <AppText style={styles.label}>Description</AppText>
+        <TextInput
+          style={[styles.input, { height: 100 }]}
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
 
-      <Text style={styles.label}>Time</Text>
-      <TouchableOpacity onPress={() => setTimePickerVisible(true)} style={styles.input}>
-        <Text>{startTime ? startTime.toLocaleTimeString() : 'Pick Event Time'}</Text>
-      </TouchableOpacity>
+        <AppText style={styles.label}>Date</AppText>
+        <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.input}>
+          <AppText>{startDate ? startDate.toLocaleDateString() : 'Pick Event Date'}</AppText>
+        </TouchableOpacity>
 
-      <Text style={styles.label}>Location</Text>
-      <TextInput style={styles.input} value={location} onChangeText={setLocation} />
+        <AppText style={styles.label}>Time</AppText>
+        <TouchableOpacity onPress={() => setTimePickerVisible(true)} style={styles.input}>
+          <AppText>{startTime ? startTime.toLocaleTimeString() : 'Pick Event Time'}</AppText>
+        </TouchableOpacity>
 
-      <Text style={styles.label}>Organizer Name</Text>
-      <TextInput style={styles.input} value={organizerName} onChangeText={setOrganizerName} />
+        <AppText style={styles.label}>Location</AppText>
+        <TextInput style={styles.input} value={location} onChangeText={setLocation} />
 
-      <Text style={styles.label}>Category</Text>
-      <View style={styles.pickerContainer}>
-        <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)}>
-          <Picker.Item label="Music" value="Music" />
-          <Picker.Item label="Tech" value="Tech" />
-          <Picker.Item label="Art" value="Art" />
-          <Picker.Item label="Sports" value="Sports" />
-        </Picker>
+        <AppText style={styles.label}>Organizer Name</AppText>
+        <TextInput style={styles.input} value={organizerName} onChangeText={setOrganizerName} />
+
+        <AppText style={styles.label}>Category</AppText>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)}>
+            <Picker.Item label="Music" value="Music" />
+            <Picker.Item label="Tech" value="Tech" />
+            <Picker.Item label="Art" value="Art" />
+            <Picker.Item label="Sports" value="Sports" />
+          </Picker>
+        </View>
+
+        <AppText style={styles.label}>Number of Seats</AppText>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={seats}
+          onChangeText={setSeats}
+        />
+
+        <AppText style={styles.label}>Cost per Ticket (₹)</AppText>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={cost}
+          onChangeText={setCost}
+        />
       </View>
 
-      <Text style={styles.label}>Number of Seats</Text>
-      <TextInput style={styles.input} keyboardType="numeric" value={seats} onChangeText={setSeats} />
-
-      <Text style={styles.label}>Cost per Ticket (₹)</Text>
-      <TextInput style={styles.input} keyboardType="numeric" value={cost} onChangeText={setCost} />
-
-      <Button title="Submit Event" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <AppText weight="bold" style={styles.submitButtonText}>Submit Event</AppText>
+      </TouchableOpacity>
 
       {isDatePickerVisible && (
         <DateTimePicker
@@ -139,37 +177,62 @@ const ListEventForm = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    paddingBottom: 50,
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: '#af9ec8',
+    paddingHorizontal: 16,
   },
   heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    marginTop:30,
-    color: '#333',
+    fontSize: 30,
+    marginVertical: 24,
+    color: '#222',
     textAlign: 'center',
+    paddingTop: 60,
+  },
+  formCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
-    color: '#444',
     fontWeight: '600',
+    color: 'black',
+    marginBottom: 6,
   },
   input: {
+    backgroundColor: '#f9f9f9',
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: '#ddd',
     padding: 10,
-    marginBottom: 15,
-    borderRadius: 8,
+    marginBottom: 16,
+    borderRadius: 10,
     fontSize: 15,
   },
   pickerContainer: {
+    backgroundColor: '#f9f9f9',
     borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 8,
-    marginBottom: 15,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginBottom: 16,
+  },
+  submitButton: {
+    backgroundColor: 'rgb(35, 21, 40)',
+    borderRadius: 50,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    marginTop: 20,
+    alignItems: 'center',
+    alignSelf: 'center',
+    width: '80%',
+    elevation: 5,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 

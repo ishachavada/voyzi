@@ -24,6 +24,7 @@ import ModifyEvent from './ModifyEvent';
 import BookingScreen from './BookingScreen';
 import OTPVerification from './OTPVerification';
 import { UserProvider } from './context/UserContext';
+import ManageBookings from './ManageBookings';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,7 @@ const App = () => {
           <Stack.Screen name="ModifyEvent" component={ModifyEvent} />
           <Stack.Screen name="BookingScreen" component={BookingScreen} />
           <Stack.Screen name="OTPVerification" component={OTPVerification} />
+          <Stack.Screen name="ManageBookings" component={ManageBookings} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>

@@ -63,91 +63,110 @@ const HomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('./assets/images/050 Snow Again.png')} 
-      style={{ flex: 1 }}
+      source={require('./assets/images/abstract-gradient-background-with-blue-circles-purple-pink-color_1332213-56306.jpg')}
+      style={styles.bgImage}
       resizeMode="cover"
     >
-      <View style={{ flex: 1, paddingHorizontal: 20 }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 130 ,paddingTop: 15, scrollEnabled: true}} showsVerticalScrollIndicator={false}>
-          {/* Location */}
-          <View style={styles.locationRow}>
-            <View>
-              <AppText style={{ fontSize: 15, color: 'black' }}>Location</AppText>
-              {loading ? (
-                <ActivityIndicator size="small" color="black" />
-              ) : (
-                <AppText weight="bold" style={{ fontSize: 22 }}>{location}</AppText>
-              )}
-            </View>
-            <Ionicons name="notifications-outline" size={24} color="black" />
-          </View>
+      <View style={styles.darkOverlay}>
+        <BlurView intensity={70} style={styles.blurBackground}>
+          <View style={styles.glassContainer}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 130, paddingTop: 15 }} showsVerticalScrollIndicator={false}>
+              {/* Location */}
+              <View style={styles.locationRow}>
+                <View>
+                  <AppText style={{ fontSize: 15, color: 'black' }}>Location</AppText>
+                  {loading ? (
+                    <ActivityIndicator size="small" color="black" />
+                  ) : (
+                    <AppText weight="bold" style={{ fontSize: 22 }}>{location}</AppText>
+                  )}
+                </View>
+                <Ionicons name="notifications-outline" size={24} color="black" />
+              </View>
 
-          {/* Search bar */}
-          <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color="black" style={{ marginRight: 10 }} />
-            <TextInput placeholder="Search Events" style={{ size: 18, flex: 1, fontFamily: 'Poppins_400Regular',color: "black" }} />
-            <MaterialIcons name="tune" size={20} color="black" />
-          </View>
+              {/* Search bar */}
+              <View style={styles.searchBar}>
+                <Ionicons name="search" size={20} color="black" style={{ marginRight: 10 }} />
+                <TextInput placeholder="Search Events" placeholderTextColor="#333" style={{ size: 18, flex: 1, fontFamily: 'Poppins_400Regular', color: "black" }} />
+                <MaterialIcons name="tune" size={20} color="black" />
+              </View>
 
-          {/* Categories */}
-          <View style={{ marginBottom: 20 }}>
-            <AppText weight="bold" style={{ fontSize: 30, marginBottom: 15, marginTop: 15 }}>Popular Categories</AppText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-              {categoryData.map((item, index) => (
+              {/* Categories */}
+              <View style={{ marginBottom: 20 }}>
+                <AppText weight="bold" style={{ fontSize: 30, marginBottom: 15, marginTop: 15 }}>Popular Categories</AppText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                  {categoryData.map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.categoryBox}
+                      onPress={() => navigation.navigate('CategoryEvents', { category: item.name })}
+                    >
+                      <ImageBackground
+                        source={item.image}
+                        style={styles.categoryImage}
+                        imageStyle={{ borderRadius: 15 }}
+                      >
+                        <View style={styles.categoryOverlay} />
+                        <AppText weight="bold" style={styles.categoryText}>
+                          {item.name}
+                        </AppText>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Upcoming Events */}
+              <AppText weight="bold" style={{ fontSize: 28, marginTop: 10, marginBottom: 18 }}>
+                Upcoming Events
+              </AppText>
+
+              {/* Fetched Events */}
+              {events.map((event) => (
                 <TouchableOpacity
-                  key={index}
-                  style={styles.categoryBox}
-                  onPress={() => navigation.navigate('CategoryEvents', { category: item.name })}
+                  key={event.id}
+                  onPress={() => navigation.navigate('EventDetails', { event })}
+                  style={styles.eventCardWrapper}
                 >
-                  <ImageBackground
-                    source={item.image}
-                    style={styles.categoryImage}
-                    imageStyle={{ borderRadius: 15 }}
-                  >
-                    <View style={styles.categoryOverlay} />
-                    <AppText weight="bold" style={styles.categoryText}>
-                      {item.name}
-                    </AppText>
-                  </ImageBackground>
+                  <BlurView intensity={50} tint="light" style={styles.blurContainer}>
+                    <AppText weight="bold" style={{ fontSize: 18 }}>{event.name}</AppText>
+                    <AppText>{event.location || 'No location provided'}</AppText>
+                  </BlurView>
                 </TouchableOpacity>
               ))}
             </ScrollView>
+
+            {/* Bottom Navigation */}
+            <View style={styles.bottomNav}>
+              <Ionicons name="home" size={24} color="black" />
+              <Ionicons name="heart-outline" size={24} color="black" />
+              <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                <Ionicons name="person-outline" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
-
-          {/* Upcoming Events */}
-          <AppText weight="bold" style={{ fontSize: 28, marginTop: 10, marginBottom: 18 }}>
-            Upcoming Events
-          </AppText>
-
-          {/* Fetched Events from Firestore */}
-          {events.map((event) => (
-            <TouchableOpacity
-              key={event.id}
-              onPress={() => navigation.navigate('EventDetails', { event })}
-              style={styles.eventCardWrapper}
-            >
-              <BlurView intensity={0} tint="light" style={styles.blurContainer}>
-                <AppText weight="bold" style={{ fontSize: 18 }}>{event.name}</AppText>
-                <AppText>{event.location || 'No location provided'}</AppText>
-              </BlurView>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <Ionicons name="home" size={24} color="#ff7f50" />
-          <Ionicons name="heart-outline" size={24} color="#888" />
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Ionicons name="person-outline" size={24} color="#888" />
-          </TouchableOpacity>
-        </View>
+        </BlurView>
       </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  bgImage: {
+    flex: 1,
+  },
+  darkOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(54, 53, 53, 0.1)', 
+  },
+  blurBackground: {
+    flex: 1,
+  },
+  glassContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
   locationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -157,14 +176,14 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(63, 54, 64, 0.32)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 10,
     padding: 10,
     marginVertical: 17,
     paddingTop: 15,
     paddingLeft: 20,
-    paddingRight:20  },
-
+    paddingRight: 20,
+  },
   categoryBox: {
     height: 200,
     width: 300,
@@ -199,7 +218,7 @@ const styles = StyleSheet.create({
   blurContainer: {
     padding: 14,
     borderRadius: 15,
-    backgroundColor: 'rgba(63, 54, 64, 0.32)',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   bottomNav: {
     flexDirection: 'row',
@@ -209,7 +228,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
 });
 

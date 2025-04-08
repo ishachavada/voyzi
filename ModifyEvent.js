@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from './firebaseConfig'; // Make sure this path is correct
+import { db } from './firebaseConfig';
+import AppText from './AppText';
 
 const ModifyEvent = () => {
   const route = useRoute();
@@ -73,111 +84,109 @@ const ModifyEvent = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modify Event</Text>
+    <ImageBackground
+      source={require('./assets/images/wp7952942.jpg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <AppText weight="bold" style={styles.title}>Modify Event</AppText>
 
-      <Text style={styles.label}>Event Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter event name"
-        value={name}
-        onChangeText={setName}
-      />
+            {[
+              { label: 'Event Name', value: name, setter: setName },
+              { label: 'Description', value: description, setter: setDescription },
+              { label: 'Ticket Count', value: ticketCount, setter: setTicketCount, keyboardType: 'numeric' },
+              { label: 'Ticket Cost', value: ticketCost, setter: setTicketCost, keyboardType: 'numeric' },
+              { label: 'Date (YYYY-MM-DD)', value: date, setter: setDate },
+              { label: 'Location', value: location, setter: setLocation },
+              { label: 'Category', value: category, setter: setCategory },
+            ].map(({ label, value, setter, keyboardType }, index) => (
+              <View key={index} style={styles.inputGroup}>
+                <AppText weight="bold" style={styles.label}>{label}</AppText>
+                <TextInput
+                  style={styles.input}
+                  value={value}
+                  onChangeText={setter}
+                  keyboardType={keyboardType || 'default'}
+                  placeholder={`Enter ${label.toLowerCase()}`}
+                  placeholderTextColor="#999"
+                />
+              </View>
+            ))}
 
-      <Text style={styles.label}>Description</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter event description"
-        value={description}
-        onChangeText={setDescription}
-      />
-
-      <Text style={styles.label}>Ticket Count</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter total number of tickets"
-        value={ticketCount}
-        keyboardType="numeric"
-        onChangeText={setTicketCount}
-      />
-
-      <Text style={styles.label}>Ticket Cost</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter cost per ticket"
-        value={ticketCost}
-        keyboardType="numeric"
-        onChangeText={setTicketCost}
-      />
-
-      <Text style={styles.label}>Date</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="YYYY-MM-DD"
-        value={date}
-        onChangeText={setDate}
-      />
-
-      <Text style={styles.label}>Location</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter location"
-        value={location}
-        onChangeText={setLocation}
-      />
-
-      <Text style={styles.label}>Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter event category"
-        value={category}
-        onChangeText={setCategory}
-      />
-
-      <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-        <Text style={styles.saveButtonText}>Save Changes</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+              <AppText style={styles.saveButtonText}>Save Changes</AppText>
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 };
 
+export default ModifyEvent;
+
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(237, 215, 243, 0.6)',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 28,
+    color: 'black',
+    marginBottom: 24,
+    paddingTop: 70,
     textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  inputGroup: {
+    marginBottom: 16,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 5,
-    marginTop: 10,
+    fontSize: 14,
+    color: 'black',
+    marginBottom: 6,
   },
   input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    borderRadius: 5,
+    height: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    color: '#333',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
   },
   saveButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: 'rgba(53, 40, 71, 0.86)',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
   },
 });
-
-export default ModifyEvent;

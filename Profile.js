@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   Image,
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
@@ -16,10 +17,16 @@ import { Ionicons } from '@expo/vector-icons';
 import maleAvatar from './assets/images/male.png';
 import femaleAvatar from './assets/images/female.png';
 import anonymousAvatar from './assets/images/OIP.jpeg';
+import bgImage from './assets/images/aa.jpg';
 
 const Profile = () => {
   const navigation = useNavigation();
   const { user, setUser } = useUser();
+  const [currentUser, setCurrentUser] = useState(user);
+
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -33,63 +40,63 @@ const Profile = () => {
   };
 
   const getAvatar = () => {
-    if (user?.gender === 'male') return maleAvatar;
-    if (user?.gender === 'female') return femaleAvatar;
+    if (currentUser?.gender?.toLowerCase() === 'male') return maleAvatar;
+    if (currentUser?.gender?.toLowerCase() === 'female') return femaleAvatar;
     return anonymousAvatar;
   };
 
   return (
-    <ImageBackground
-      source={require('./assets/images/050 Snow Again.png')}
-      style={styles.bg}
-      resizeMode="cover"
-    >
-      <View style={styles.container}>
-        {/* Profile avatar and name */}
-        <View style={styles.profileTop}>
-          <Image source={getAvatar()} style={styles.avatar} />
-          <AppText weight="bold" style={styles.name}>
-            {user?.name || 'User'}
-          </AppText>
-        </View>
+    <ImageBackground source={bgImage} style={styles.bg} resizeMode="cover">
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={styles.container}>
+            <View style={styles.profileTop}>
+              <Image source={getAvatar()} style={styles.avatar} />
+              <AppText weight="bold" style={styles.name}>
+                {currentUser?.name || 'User'}
+              </AppText>
+            </View>
 
-        {/* Button Grid */}
-        <View style={styles.buttonGrid}>
-          <TouchableOpacity
-            style={styles.gridButton}
-            onPress={() => navigation.navigate('EditProfile')}
-          >
-            <AppText style={styles.buttonText}>Edit Profile</AppText>
-          </TouchableOpacity>
+            <View style={styles.buttonGrid}>
+              <TouchableOpacity
+                style={styles.gridButton}
+                onPress={() => navigation.navigate('EditProfile')}
+              >
+                <AppText style={styles.buttonText}>Edit Profile</AppText>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.gridButton}
-            onPress={() => navigation.navigate('ManageBookings')}
-          >
-            <AppText style={styles.buttonText}>Manage                Bookings</AppText>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.gridButton}
+                onPress={() => navigation.navigate('ManageBookings')}
+              >
+                <AppText style={styles.buttonText}>Manage{'\n'}Bookings</AppText>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.gridButton}
-            onPress={() => navigation.navigate('ListEventOptions')}
-          >
-            <AppText style={styles.buttonText}>List Your                   Event</AppText>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.gridButton}
+                onPress={() => navigation.navigate('ListEventOptions')}
+              >
+                <AppText style={styles.buttonText}>List Your{'\n'}Event</AppText>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.gridButton, styles.logoutButton]} onPress={handleLogout}>
-            <AppText style={styles.buttonText}>Logout</AppText>
-          </TouchableOpacity>
-        </View>
+              <TouchableOpacity
+                style={[styles.gridButton, styles.logoutButton]}
+                onPress={handleLogout}
+              >
+                <AppText style={styles.buttonText}>Logout</AppText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
 
-        {/* Bottom Nav */}
         <View style={styles.bottomNav}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Ionicons name="home" size={24} color="#888" />
+            <Ionicons name="home" size={24} color="black" />
           </TouchableOpacity>
-          <Ionicons name="heart-outline" size={24} color="#888" />
-          <Ionicons name="person" size={24} color="#ff7f50" />
+          <Ionicons name="heart-outline" size={24} color="black" />
+          <Ionicons name="person" size={24} color="black" />
         </View>
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
@@ -99,12 +106,23 @@ export default Profile;
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  scroll: {
+    flexGrow: 1,
+    paddingBottom: 100,
   },
   container: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 190,
-    backgroundColor: 'rgba(63, 54, 64, 0.32)',
+    margin: 20,
+    marginTop: 160,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderRadius: 30,
+    padding: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
   },
   profileTop: {
     alignItems: 'center',
@@ -118,8 +136,10 @@ const styles = StyleSheet.create({
   },
   name: {
     paddingTop: 10,
-    fontSize: 27,
-    color: 'rgba(56, 38, 38, 0.85)',
+    fontSize: 28,
+    color: '#000',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   buttonGrid: {
     flexDirection: 'row',
@@ -127,10 +147,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 20,
     columnGap: 12,
-    marginTop: 20,
+    marginTop: 10,
   },
   gridButton: {
-    backgroundColor: 'rgba(64, 58, 64, 0.72)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     paddingVertical: 30,
     paddingHorizontal: 5,
     borderRadius: 20,
@@ -138,29 +158,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
   },
   logoutButton: {
-    backgroundColor: 'rgba(56, 38, 38, 0.85)',
+    backgroundColor: '#af9ec8',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 18,
     textAlign: 'center',
-    flexWrap: 'wrap',
     lineHeight: 20,
-    maxWidth: '100%',
   },
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    padding: 15,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 15,
-    backgroundColor: '#fff',
   },
 });

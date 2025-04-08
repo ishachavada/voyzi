@@ -1,59 +1,101 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AppText from './AppText';
 
 const ListEventOptions = () => {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Event Management</Text>
+    <ImageBackground
+      source={require('./assets/images/wp7952942.jpg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            <AppText weight="bold" style={styles.heading}>
+              Event Management
+            </AppText>
 
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate('ListEventForm')}
-      >
-        <Text style={styles.cardText}>List New Event</Text>
-      </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => navigation.navigate('ListEventForm')}
+            >
+              <AppText style={styles.cardText}>List New Event</AppText>
+            </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate('ManageYourEvents')}
-      >
-        <Text style={styles.cardText}>Manage Your Events</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => navigation.navigate('ManageYourEvents')}
+            >
+              <AppText style={styles.cardText}>Manage Your Events</AppText>
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 };
 
 export default ListEventOptions;
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    padding: 20,
-    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
-  heading: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
+  overlay: {
+    flex: 1,
   },
-  card: {
-    backgroundColor: '#f2f2f2',
-    borderRadius: 12,
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    marginVertical: 10,
+  safeArea: {
+    flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    padding: 24,
+  },
+  heading: {
+    fontSize: 28,
+    color: 'black',
+    marginBottom: 40,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  card: {
+    backgroundColor: 'rgba(104, 98, 104, 0.3)',
+    width: '100%',
+    borderRadius: 20,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
   },
   cardText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: '#333',
+    color: 'black',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

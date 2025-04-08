@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import AppText from './AppText';
 
 const ManageBookings = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Manage Bookings</Text>
-      <Text>Your booked events will appear here.</Text>
+      <AppText weight="bold" style={styles.title}>
+        Manage Bookings
+      </AppText>
+      <AppText style={styles.message}>
+        Your booked events will appear here.
+      </AppText>
     </View>
   );
 };
@@ -18,10 +23,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#af9ec8',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 26,
+    color: '#fff',
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: 18,
+    color: '#e9e6f0',
+    textAlign: 'center',
   },
 });
