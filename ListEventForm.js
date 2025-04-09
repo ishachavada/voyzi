@@ -204,13 +204,17 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   input: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f0f0f0',
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
     marginBottom: 16,
     borderRadius: 10,
     fontSize: 15,
+    textAlignVertical: 'top',
+    fontFamily: 'Poppins_400Regular',  
+    fontWeight: '400',             
+    color: '#000', 
   },
   pickerContainer: {
     backgroundColor: '#f9f9f9',

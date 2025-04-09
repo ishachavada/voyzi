@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'black',
     marginBottom: 24,
-    paddingTop: 70,
+    paddingTop: 85,
     textAlign: 'center',
     textShadowColor: 'rgba(0,0,0,0.2)',
     textShadowOffset: { width: 1, height: 1 },
@@ -173,6 +173,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
+    fontFamily: 'Poppins_400Regular',  
+    fontWeight: '400',             
+    color: '#000', 
   },
   saveButton: {
     backgroundColor: 'rgba(53, 40, 71, 0.86)',
