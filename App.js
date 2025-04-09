@@ -7,7 +7,7 @@ import {
   Poppins_700Bold_Italic,
   Poppins_400Regular_Italic,
 } from '@expo-google-fonts/poppins';
-
+import Confirmation from './Confirmation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
@@ -42,7 +42,7 @@ const App = () => {
     <UserProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="Login"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -59,7 +59,9 @@ const App = () => {
           <Stack.Screen name="BookingScreen" component={BookingScreen} />
           <Stack.Screen name="OTPVerification" component={OTPVerification} />
           <Stack.Screen name="ManageBookings" component={ManageBookings} />
+          <Stack.Screen name="Confirmation" component={Confirmation} />
         </Stack.Navigator>
+        {/* </Stack.Navigator> */}
       </NavigationContainer>
     </UserProvider>
   );

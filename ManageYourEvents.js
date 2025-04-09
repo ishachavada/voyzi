@@ -1,37 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
   Alert,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
   ImageBackground,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import { db } from './firebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import AppText from './AppText';
 
 const ManageYourEvents = () => {
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchEventsAndTickets = async () => {
       try {
         const eventsRef = collection(db, 'events');
-        const querySnapshot = await getDocs(eventsRef);
-        const eventList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setEvents(eventList);
+        const eventSnap = await getDocs(eventsRef);
+        const eventsData = eventSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const updatedEvents = await Promise.all(eventsData.map(async (event) => {
+          const bookingsRef = collection(db, 'bookings');
+          const bookingsQuery = query(bookingsRef, where('eventId', '==', event.id));
+          const bookingSnap = await getDocs(bookingsQuery);
+          const ticketsSold = bookingSnap.size;
+          return {
+            ...event,
+            ticketsSold,
+            ticketsLeft: event.ticketCount - ticketsSold,
+          };
+        }));
+
+        setEvents(updatedEvents);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching events: ', error);
-        Alert.alert('Error', 'Failed to fetch events');
+        console.error('Error fetching events/bookings:', error);
+        Alert.alert('Error', 'Failed to fetch event data.');
+        setLoading(false);
       }
     };
 
-    fetchEvents();
+    fetchEventsAndTickets();
   }, []);
 
   const handleModifyEvent = (eventId) => {
@@ -42,6 +58,9 @@ const ManageYourEvents = () => {
     <View style={styles.eventBlock}>
       <AppText weight="bold" style={styles.eventName}>{item.name}</AppText>
       <AppText style={styles.eventDescription}>{item.description}</AppText>
+      <AppText style={styles.ticketsLeft}>
+        🎟 Tickets Left: {item.ticketsLeft} / {item.ticketCount}
+      </AppText>
 
       <TouchableOpacity
         style={styles.modifyButton}
@@ -62,13 +81,17 @@ const ManageYourEvents = () => {
         <SafeAreaView style={styles.safeArea}>
           <AppText weight="bold" style={styles.title}>Manage Your Events</AppText>
 
-          <FlatList
-            data={events}
-            renderItem={renderEventItem}
-            keyExtractor={item => item.id}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color="#000" style={{ marginTop: 50 }} />
+          ) : (
+            <FlatList
+              data={events}
+              renderItem={renderEventItem}
+              keyExtractor={item => item.id}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </SafeAreaView>
       </View>
     </ImageBackground>
@@ -124,6 +147,11 @@ const styles = StyleSheet.create({
   eventDescription: {
     fontSize: 16,
     color: '#333',
+    marginBottom: 10,
+  },
+  ticketsLeft: {
+    fontSize: 15,
+    color: '#222',
     marginBottom: 12,
   },
   modifyButton: {

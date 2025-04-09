@@ -72,7 +72,7 @@ const SignUpScreen = () => {
               placeholderTextColor="gray"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntrye
             />
 
             <View style={styles.radioContainer}>

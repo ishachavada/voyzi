@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     rowGap: 20,
-    columnGap: 12,
+    columnGap: 2,
     marginTop: 10,
   },
   gridButton: {
