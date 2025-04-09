@@ -62,6 +62,11 @@ const EditProfile = () => {
   }, [user]);
 
   const handleSave = async () => {
+    if (!user || !user.uid) {
+      Alert.alert('User not logged in');
+      return;
+    }
+    
     if (!name || !mobile || !dob || !age || !address || !gender) {
       Alert.alert('Please fill all fields');
       return;

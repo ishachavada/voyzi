@@ -1,40 +1,57 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import { db } from './firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const CategoryEventsScreen = () => {
   const route = useRoute();
   const { category } = route.params;
 
-  // Normalize category names to match keys
-  const key = category.replace(/\s+/g, '_');
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Dummy data
-  const allEvents = {
-    Music_Shows: ['Indie Vibes Night', 'Euphonic Beats Fest'],
-    Comedy: ['Laugh Out Loud', 'Standup Slam'],
-    Gatherings: ['Startup Meetup', 'Investor Pitch Night'],
-    Arts: ['Canvas & Chill', 'Street Art Festival'],
-  };
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const categoryLower = category.toLowerCase();
+        const eventsRef = collection(db, 'events');
+        const q = query(eventsRef, where('category_lowercase', '==', categoryLower.toLowerCase()));
+        const querySnapshot = await getDocs(q);
+        const fetchedEvents = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const events = allEvents[key] || [];
+    fetchEvents();
+  }, [category]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        {category} Events
-      </Text>
-      <ScrollView>
-        {events.length > 0 ? (
-          events.map((event, idx) => (
-            <View key={idx} style={styles.card}>
-              <Text style={styles.cardText}>{event}</Text>
-            </View>
-          ))
-        ) : (
-          <Text>No events found for this category.</Text>
-        )}
-      </ScrollView>
+      <Text style={styles.header}>{category} Events</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <ScrollView>
+          {events.length > 0 ? (
+            events.map((event) => (
+              <View key={event.id} style={styles.card}>
+                <Text style={styles.cardText}>{event.title}</Text>
+              </View>
+            ))
+          ) : (
+            <Text>No events found for this category.</Text>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -42,19 +59,19 @@ const CategoryEventsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 80,
-    flex: 1, 
-    padding: 20, 
+    flex: 1,
+    padding: 20,
     backgroundColor: '#f2f2f2',
   },
   header: {
-    fontSize: 24, 
-    fontWeight: 'bold', 
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   card: {
-    backgroundColor: '#fff', 
-    padding: 15, 
-    borderRadius: 10, 
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
     marginBottom: 15,
   },
   cardText: {

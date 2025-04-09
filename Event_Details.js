@@ -115,7 +115,7 @@ const EventDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(199, 213, 228)',
+    backgroundColor: 'rgba(47, 45, 45, 0.24)',
   },
   imageContainer: {
     width: '100%',

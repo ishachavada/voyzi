@@ -19,7 +19,7 @@ const HomeScreen = () => {
     { name: 'Music Shows', image: require('./assets/images/music_shows.jpg') },
     { name: 'Comedy', image: require('./assets/images/samay-raina.jpg') },
     { name: 'Gatherings', image: require('./assets/images/gatherings.jpeg') },
-    { name: 'Arts', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
+    { name: 'Art & Craft', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
   ];
 
   useEffect(() => {
@@ -63,12 +63,13 @@ const HomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('./assets/images/abstract-gradient-background-with-blue-circles-purple-pink-color_1332213-56306.jpg')}
+      source={require('./assets/images/aa.jpg')}
       style={styles.bgImage}
       resizeMode="cover"
     >
+      
       <View style={styles.darkOverlay}>
-        <BlurView intensity={70} style={styles.blurBackground}>
+        <BlurView intensity={10} style={styles.blurBackground}>
           <View style={styles.glassContainer}>
             <ScrollView contentContainerStyle={{ paddingBottom: 130, paddingTop: 15 }} showsVerticalScrollIndicator={false}>
               {/* Location */}
@@ -154,10 +155,12 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   bgImage: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   darkOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(54, 53, 53, 0.1)', 
+    backgroundColor: 'rgba(253, 253, 253, 0.1)', 
   },
   blurBackground: {
     flex: 1,
