@@ -9,33 +9,50 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { app } from './firebaseConfig';
 import AppText from './AppText';
+import { useUser } from './context/UserContext';
 
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
+  const { setUser } = useUser(); //
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter email and password');
-      return;
-    }
+    const auth = getAuth();
+    const db = getFirestore();
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      // Fetching user details from Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
       if (userDoc.exists()) {
-        navigation.navigate('Home', { user: userDoc.data() });
+        const userData = userDoc.data();
+        setUser({
+          uid: user.uid,
+          email: user.email,
+          name: userData.name || '',
+          gender: userData.gender || '',
+          photoURL: userData.photoURL || '',
+        });
       } else {
-        Alert.alert('Error', 'User data not found');
+        setUser({
+          uid: user.uid,
+          email: user.email,
+          name: '',
+          gender: '',
+          photoURL: '',
+        });
       }
+
+      navigation.replace('Home'); 
     } catch (error) {
-      Alert.alert('Login Failed', error.message);
+      console.error(error);
+      Alert.alert('Login failed', error.message);
     }
   };
 
@@ -149,7 +166,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 40,
-    color: 'rgba(21, 25, 111, 0.76)',
+    color: 'rgba(0, 0, 0, 0.76)',
+    fontSize:18,
+    alignContent: 'center',
   },
   loginButton: {
     backgroundColor: '#00C9FF',

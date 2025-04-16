@@ -26,32 +26,56 @@ const Confirmation = () => {
     const fetchEventAndSaveBooking = async () => {
       if (!user?.uid || !eventId) return;
 
-      const eventRef = doc(db, 'events', eventId);
-      const eventSnap = await getDoc(eventRef);
+      try {
+        // Fetch event data
+        const eventRef = doc(db, 'events', eventId);
+        const eventSnap = await getDoc(eventRef);
 
-      if (eventSnap.exists()) {
-        const event = eventSnap.data();
-        console.log('Fetched Event Data:', event); // Debugging
-        setEventData(event);
+        if (eventSnap.exists()) {
+          const event = eventSnap.data();
+          console.log('Fetched Event Data:', event); // Debugging line to check event data
+          setEventData(event);
 
-        const cost = (event.ticketPrice || 0) * ticketQty;
-        setTotalCost(cost);
+          // Ensure ticketCost exists and calculate total cost
+          const ticketCost = event.ticketCost || 0;
+          console.log('Ticket Cost:', ticketCost); // Debugging line to check ticketCost
 
-        const bookingRef = doc(db, 'bookings', id);
+          const cost = ticketCost * ticketQty;
+          setTotalCost(cost);
 
-        await setDoc(bookingRef, {
-          transactionId: id,
-          eventId: eventId,
-          eventName: event.name,
-          userId: user.uid,
-          ticketsBooked: ticketQty,
-          totalAmount: cost,
-          bookingTime: Timestamp.now(),
-          userName: user.name || '',
-          userEmail: user.email || '',
-        });
-      } else {
-        console.warn('Event not found for ID:', eventId);
+          // Create a booking document in Firestore
+          const bookingRef = doc(db, 'bookings', id);
+          console.log('Booking data to be saved:', {
+            transactionId: id,
+            eventId,
+            eventName: event.name,
+            userId: user.uid,
+            ticketsBooked: ticketQty,
+            totalAmount: cost,
+            bookingTime: Timestamp.now(),
+            userName: user.name || '',
+            userEmail: user.email || '',
+          });
+
+          // Save booking data to Firestore
+          await setDoc(bookingRef, {
+            transactionId: id,
+            eventId,
+            eventName: event.name,
+            userId: user.uid,
+            ticketsBooked: ticketQty,
+            totalAmount: cost,
+            bookingTime: Timestamp.now(),
+            userName: user.name || '',
+            userEmail: user.email || '',
+          });
+
+          console.log('Booking saved successfully!');
+        } else {
+          console.warn('Event not found for ID:', eventId);
+        }
+      } catch (error) {
+        console.error('Error fetching or saving data:', error);
       }
     };
 
@@ -145,6 +169,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 20,
     paddingHorizontal: 15,
+    
   },
   section: {
     marginBottom: 20,

@@ -13,14 +13,24 @@ const HomeScreen = () => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const navigation = useNavigation();
 
   const categoryData = [
-    { name: 'Music Shows', image: require('./assets/images/music_shows.jpg') },
+    { name: 'Music', image: require('./assets/images/music_shows.jpg') },
     { name: 'Comedy', image: require('./assets/images/samay-raina.jpg') },
     { name: 'Gatherings', image: require('./assets/images/gatherings.jpeg') },
-    { name: 'Arts', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
+    { name: 'Art', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
   ];
+
+  const toggleFavorite = (event) => {
+    const isFav = favorites.some(f => f.id === event.id);
+    if (isFav) {
+      setFavorites(prev => prev.filter(f => f.id !== event.id));
+    } else {
+      setFavorites(prev => [...prev, event]);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -63,12 +73,13 @@ const HomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('./assets/images/abstract-gradient-background-with-blue-circles-purple-pink-color_1332213-56306.jpg')}
+      source={require('./assets/images/bgg.jpg')}
       style={styles.bgImage}
       resizeMode="cover"
     >
+
       <View style={styles.darkOverlay}>
-        <BlurView intensity={70} style={styles.blurBackground}>
+        <BlurView intensity={10} style={styles.blurBackground}>
           <View style={styles.glassContainer}>
             <ScrollView contentContainerStyle={{ paddingBottom: 130, paddingTop: 15 }} showsVerticalScrollIndicator={false}>
               {/* Location */}
@@ -86,8 +97,15 @@ const HomeScreen = () => {
 
               {/* Search bar */}
               <View style={styles.searchBar}>
-                <Ionicons name="search" size={20} color="black" style={{ marginRight: 10 }} />
-                <TextInput placeholder="Search Events" placeholderTextColor="#333" style={{ size: 18, flex: 1, fontFamily: 'Poppins_400Regular', color: "black" }} />
+                <Ionicons name="search" size={15} color="black" style={{ marginRight: 10 }} />
+
+                <TextInput
+                  placeholder="Search Events"
+                  placeholderTextColor="#333"
+                  style={{ fontSize: 15, flex: 1, fontFamily: 'Poppins_400Regular', color: "black" }}
+                  onFocus={() => navigation.navigate('Search')} 
+                />
+
                 <MaterialIcons name="tune" size={20} color="black" />
               </View>
 
@@ -122,24 +140,36 @@ const HomeScreen = () => {
               </AppText>
 
               {/* Fetched Events */}
-              {events.map((event) => (
-                <TouchableOpacity
-                  key={event.id}
-                  onPress={() => navigation.navigate('EventDetails', { event })}
-                  style={styles.eventCardWrapper}
-                >
-                  <BlurView intensity={50} tint="light" style={styles.blurContainer}>
-                    <AppText weight="bold" style={{ fontSize: 18 }}>{event.name}</AppText>
-                    <AppText>{event.location || 'No location provided'}</AppText>
-                  </BlurView>
-                </TouchableOpacity>
-              ))}
+              {events.map((event) => {
+                const isFavorite = favorites.some(f => f.id === event.id);
+                return (
+                  <TouchableOpacity
+                    key={event.id}
+                    onPress={() => navigation.navigate('EventDetails', { event })}
+                    style={styles.eventCardWrapper}
+                  >
+                    <BlurView intensity={50} tint="light" style={styles.blurContainer}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <View>
+                          <AppText weight="bold" style={{ fontSize: 20 }}>{event.name}</AppText>
+                          <AppText>{event.location || 'No location provided'}</AppText>
+                        </View>
+                        <TouchableOpacity onPress={() => toggleFavorite(event)}>
+                          <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} color="#D8B4E2" />
+                        </TouchableOpacity>
+                      </View>
+                    </BlurView>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
 
             {/* Bottom Navigation */}
             <View style={styles.bottomNav}>
               <Ionicons name="home" size={24} color="black" />
-              <Ionicons name="heart-outline" size={24} color="black" />
+              <TouchableOpacity onPress={() => navigation.navigate('Favorites', { favorites })}>
+                <Ionicons name="heart" size={24} color="black" />
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                 <Ionicons name="person-outline" size={24} color="black" />
               </TouchableOpacity>
@@ -154,10 +184,12 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   bgImage: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   darkOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(54, 53, 53, 0.1)', 
+    backgroundColor: 'rgba(253, 253, 253, 0.1)',
   },
   blurBackground: {
     flex: 1,
@@ -176,7 +208,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.47)',
     borderRadius: 10,
     padding: 10,
     marginVertical: 17,

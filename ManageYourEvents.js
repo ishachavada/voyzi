@@ -10,9 +10,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { db } from './firebaseConfig';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import AppText from './AppText';
+import { MaterialIcons } from '@expo/vector-icons'; // <-- Make sure expo/vector-icons is installed
 
 const ManageYourEvents = () => {
   const [events, setEvents] = useState([]);
@@ -20,35 +21,57 @@ const ManageYourEvents = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchEventsAndTickets = async () => {
-      try {
-        const eventsRef = collection(db, 'events');
-        const eventSnap = await getDocs(eventsRef);
-        const eventsData = eventSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        const updatedEvents = await Promise.all(eventsData.map(async (event) => {
-          const bookingsRef = collection(db, 'bookings');
-          const bookingsQuery = query(bookingsRef, where('eventId', '==', event.id));
-          const bookingSnap = await getDocs(bookingsQuery);
-          const ticketsSold = bookingSnap.size;
-          return {
-            ...event,
-            ticketsSold,
-            ticketsLeft: event.ticketCount - ticketsSold,
-          };
-        }));
-
-        setEvents(updatedEvents);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching events/bookings:', error);
-        Alert.alert('Error', 'Failed to fetch event data.');
-        setLoading(false);
-      }
-    };
-
-    fetchEventsAndTickets();
+    fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const eventsRef = collection(db, 'events');
+      const eventSnap = await getDocs(eventsRef);
+      const eventsData = eventSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      const updatedEvents = await Promise.all(eventsData.map(async (event) => {
+        const bookingsRef = collection(db, 'bookings');
+        const bookingsQuery = query(bookingsRef, where('eventId', '==', event.id));
+        const bookingSnap = await getDocs(bookingsQuery);
+        const ticketsSold = bookingSnap.size;
+        return {
+          ...event,
+          ticketsSold,
+          ticketsLeft: event.ticketCount - ticketsSold,
+        };
+      }));
+
+      setEvents(updatedEvents);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching events/bookings:', error);
+      Alert.alert('Error', 'Failed to fetch event data.');
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      await deleteDoc(doc(db, 'events', eventId));
+      setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+      Alert.alert('Success', 'Event deleted successfully.');
+    } catch (error) {
+      console.error('Delete error:', error);
+      Alert.alert('Error', 'Failed to delete event.');
+    }
+  };
+
+  const confirmDelete = (eventId) => {
+    Alert.alert(
+      'Delete Event',
+      'Are you sure you want to delete this event?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => handleDeleteEvent(eventId) },
+      ]
+    );
+  };
 
   const handleModifyEvent = (eventId) => {
     navigation.navigate('ModifyEvent', { eventId });
@@ -56,6 +79,13 @@ const ManageYourEvents = () => {
 
   const renderEventItem = ({ item }) => (
     <View style={styles.eventBlock}>
+      <TouchableOpacity
+        style={styles.deleteIcon}
+        onPress={() => confirmDelete(item.id)}
+      >
+        <MaterialIcons name="delete" size={24} color="#fff" />
+      </TouchableOpacity>
+
       <AppText weight="bold" style={styles.eventName}>{item.name}</AppText>
       <AppText style={styles.eventDescription}>{item.description}</AppText>
       <AppText style={styles.ticketsLeft}>
@@ -67,6 +97,20 @@ const ManageYourEvents = () => {
         onPress={() => handleModifyEvent(item.id)}
       >
         <AppText style={styles.modifyButtonText}>Modify</AppText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => navigation.navigate('ValidateTicket', { eventId: item.id })}
+      >
+        <AppText style={styles.secondaryButtonText}>Validate Ticket</AppText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => navigation.navigate('EventAnalytics', { eventId: item.id })}
+      >
+        <AppText style={styles.secondaryButtonText}>Analytics</AppText>
       </TouchableOpacity>
     </View>
   );
@@ -138,6 +182,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
+    position: 'relative',
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 4,
+    backgroundColor: '#d11a2a',
+    borderRadius: 20,
   },
   eventName: {
     fontSize: 18,
@@ -164,5 +217,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: '#6c4f76',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  secondaryButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '500',
   },
 });

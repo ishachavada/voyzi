@@ -7,7 +7,7 @@ import { useUser } from './context/UserContext';
 
 const ManageBookings = () => {
   const navigation = useNavigation();
-  const { user } = useContext(UserContext);
+  const { user } = useUser;
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 

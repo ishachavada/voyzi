@@ -29,7 +29,9 @@ import ManageBookings from './ManageBookings';
 import BookingDetails from './BookingDetails';
 import { UserProvider } from './context/UserContext';
 import { LogBox } from 'react-native';
-
+import ValidateTicket from './ValidateTicket'; 
+import SearchEvent from './SearchEvent';
+import FavoritesScreen from './FavoritesScreen';
 LogBox.ignoreLogs([
   'Failed to initialize reCAPTCHA Enterprise config',
 ]);
@@ -49,7 +51,7 @@ const App = () => {
   return (
     <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -66,6 +68,9 @@ const App = () => {
           <Stack.Screen name="ManageBookings" component={ManageBookings} />
           <Stack.Screen name="BookingDetails" component={BookingDetails} />
           <Stack.Screen name="Confirmation" component={Confirmation} />
+          <Stack.Screen name="ValidateTicket" component={ValidateTicket} /> 
+          <Stack.Screen name="Search" component={SearchEvent} />
+          <Stack.Screen name="Favorites" component={FavoritesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>

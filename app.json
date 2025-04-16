@@ -3,15 +3,17 @@
     "name": "VOYZI",
     "slug": "VOYZI",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "plugins": [
-      "expo-font"
-    ],
-    "newArchEnabled": true,
-        "updates": {
-      "enabled": false
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "extra": {
+      "EXPO_CLIENT_ID": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",
+      "ANDROID_CLIENT_ID": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",
+      "IOS_CLIENT_ID": "961032350119-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
     }
   }
 }

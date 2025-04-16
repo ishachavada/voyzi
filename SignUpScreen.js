@@ -75,21 +75,7 @@ const SignUpScreen = () => {
               secureTextEntry
             />
 
-            <View style={styles.radioContainer}>
-              {['Attendee', 'Organizer'].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={styles.radioOption}
-                  onPress={() => setRole(option)}
-                >
-                  <View style={styles.radioCircleOuter}>
-                    {role === option && <View style={styles.radioCircleInner} />}
-                  </View>
-                  <AppText style={styles.radioLabel}>{option}</AppText>
-                </TouchableOpacity>
-              ))}
-            </View>
-
+            
             <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
               <AppText weight="semibold" style={styles.signUpButtonText}>SIGN UP</AppText>
             </TouchableOpacity>
