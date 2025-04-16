@@ -16,10 +16,10 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   const categoryData = [
-    { name: 'Music Shows', image: require('./assets/images/music_shows.jpg') },
+    { name: 'Music', image: require('./assets/images/music_shows.jpg') },
     { name: 'Comedy', image: require('./assets/images/samay-raina.jpg') },
     { name: 'Gatherings', image: require('./assets/images/gatherings.jpeg') },
-    { name: 'Art & Craft', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
+    { name: 'Art', image: require('./assets/images/lifestyle-working-arts-crafts.jpg') },
   ];
 
   useEffect(() => {
