@@ -67,7 +67,7 @@ const HomeScreen = () => {
       style={styles.bgImage}
       resizeMode="cover"
     >
-      
+
       <View style={styles.darkOverlay}>
         <BlurView intensity={10} style={styles.blurBackground}>
           <View style={styles.glassContainer}>
@@ -87,10 +87,19 @@ const HomeScreen = () => {
 
               {/* Search bar */}
               <View style={styles.searchBar}>
-                <Ionicons name="search" size={20} color="black" style={{ marginRight: 10 }} />
-                <TextInput placeholder="Search Events" placeholderTextColor="#333" style={{ size: 18, flex: 1, fontFamily: 'Poppins_400Regular', color: "black" }} />
+                <Ionicons name="search" size={15} color="black" style={{ marginRight: 10 }} />
+
+                <TextInput
+                  placeholder="Search Events"
+                  placeholderTextColor="#333"
+                  style={{ fontSize: 15, flex: 1, fontFamily: 'Poppins_400Regular', color: "black" }}
+                  onFocus={() => navigation.navigate('Search')} 
+                />
+
                 <MaterialIcons name="tune" size={20} color="black" />
               </View>
+
+
 
               {/* Categories */}
               <View style={{ marginBottom: 20 }}>
@@ -160,7 +169,7 @@ const styles = StyleSheet.create({
   },
   darkOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(253, 253, 253, 0.1)', 
+    backgroundColor: 'rgba(253, 253, 253, 0.1)',
   },
   blurBackground: {
     flex: 1,
