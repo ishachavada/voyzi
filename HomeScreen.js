@@ -63,7 +63,7 @@ const HomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('./assets/images/aa.jpg')}
+      source={require('./assets/images/bgg.jpg')}
       style={styles.bgImage}
       resizeMode="cover"
     >
@@ -130,7 +130,7 @@ const HomeScreen = () => {
                   style={styles.eventCardWrapper}
                 >
                   <BlurView intensity={50} tint="light" style={styles.blurContainer}>
-                    <AppText weight="bold" style={{ fontSize: 18 }}>{event.name}</AppText>
+                    <AppText weight="bold" style={{ fontSize: 20 }}>{event.name}</AppText>
                     <AppText>{event.location || 'No location provided'}</AppText>
                   </BlurView>
                 </TouchableOpacity>
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.47)',
     borderRadius: 10,
     padding: 10,
     marginVertical: 17,

@@ -41,7 +41,7 @@ const EventDetails = () => {
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={event.imageUrl ? { uri: event.imageUrl } : require('./assets/images/event1.jpg')}
+          source={event.imageUrl ? { uri: event.imageUrl } : require('./assets/images/event_deets.jpg')}
           style={styles.eventImage}
         />
         {isHouseFull && (
@@ -115,7 +115,7 @@ const EventDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(47, 45, 45, 0.24)',
+    backgroundColor: 'rgba(16, 15, 16, 0.28)',
   },
   imageContainer: {
     width: '100%',
@@ -124,10 +124,9 @@ const styles = StyleSheet.create({
   },
   eventImage: {
     width: '100%',
-    height: 350,
+    height: 300,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    opacity: 0.8,
   },
   houseFullOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -146,13 +145,11 @@ const styles = StyleSheet.create({
   eventId: {
     position: 'absolute',
     right: 19,
-    bottom: 5,
+    bottom: 1,
     color: '#fff',
-    fontSize: 12,
-    backgroundColor: '#000',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 15,
+    fontSize: 11,
+    paddingVertical: 1,
+    paddingHorizontal:10,
   },
   infoCard: {
     backgroundColor: '#fff',
@@ -258,7 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   ticketsLeft: {
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 2,
   },
   rsvpButton: {
