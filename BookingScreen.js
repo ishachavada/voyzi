@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {
   getDoc,
@@ -32,7 +39,6 @@ const BookingScreen = () => {
       try {
         const currentUser = auth.currentUser;
         if (!currentUser) {
-          console.log('No authenticated user.');
           setLoading(false);
           return;
         }
@@ -61,7 +67,10 @@ const BookingScreen = () => {
           where('eventId', '==', eventData.id)
         );
         const bookingsSnap = await getDocs(bookingQuery);
-        const booked = bookingsSnap.docs.reduce((sum, doc) => sum + (doc.data().quantity || 0), 0);
+        const booked = bookingsSnap.docs.reduce(
+          (sum, doc) => sum + (doc.data().quantity || 0),
+          0
+        );
 
         setAvailable(Math.max(totalTickets - booked, 0));
       } catch (err) {
@@ -98,7 +107,10 @@ const BookingScreen = () => {
         where('eventId', '==', eventData.id)
       );
       const bookingSnap = await getDocs(bookingQuery);
-      const sold = bookingSnap.docs.reduce((sum, doc) => sum + (doc.data().quantity || 0), 0);
+      const sold = bookingSnap.docs.reduce(
+        (sum, doc) => sum + (doc.data().quantity || 0),
+        0
+      );
       const left = total - sold;
 
       if (left < quantity) {
@@ -160,25 +172,29 @@ const BookingScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Book Tickets for {eventData.eventName}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.title}>🎫 Book Tickets for {eventData.eventName}</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Name</Text>
-        <Text style={styles.box}>{user.name || 'N/A'}</Text>
-
-        <Text style={styles.label}>Age</Text>
-        <Text style={styles.box}>{user.age || 'N/A'}</Text>
-
-        <Text style={styles.label}>Address</Text>
-        <Text style={styles.box}>{user.address || 'N/A'}</Text>
+      <View style={styles.card}>
+        <Text style={styles.label}>👤 Name</Text>
+        <Text style={styles.valueBox}>{user.name || 'N/A'}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Select Tickets</Text>
+      <View style={styles.card}>
+        <Text style={styles.label}>🎂 Age</Text>
+        <Text style={styles.valueBox}>{user.age || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>📍 Address</Text>
+        <Text style={styles.valueBox}>{user.address || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>🎟️ Select Tickets</Text>
         <View style={styles.counterContainer}>
           <TouchableOpacity style={styles.counterBtn} onPress={decrease}>
-            <Text style={styles.counterText}>-</Text>
+            <Text style={styles.counterText}>−</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>{quantity}</Text>
           <TouchableOpacity
@@ -186,15 +202,20 @@ const BookingScreen = () => {
             onPress={increase}
             disabled={quantity >= available}
           >
-            <Text style={styles.counterText}>+</Text>
+            <Text style={styles.counterText}>＋</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.remaining}>🎟️ {available} tickets remaining</Text>
+        <Text style={styles.remaining}>Available: {available}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Ticket Price: ₹{ticketCost}</Text>
-        <Text style={styles.label}>Total: ₹{totalCost}</Text>
+      <View style={styles.card}>
+        <Text style={styles.label}>💰 Ticket Price</Text>
+        <Text style={styles.valueBox}>₹{ticketCost}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>🧾 Total</Text>
+        <Text style={styles.valueBox}>₹{totalCost}</Text>
       </View>
 
       <TouchableOpacity style={styles.btn} onPress={handleBookingConfirm}>
@@ -205,17 +226,45 @@ const BookingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, marginTop: 40 },
-  section: { marginBottom: 20 },
-  label: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
-  box: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 10,
+  container: {
+    flex: 1,
+    backgroundColor: '#eae6f7',
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    paddingBottom: 30,
+    paddingTop: 50,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 25,
+    textAlign: 'center',
+    color: '#4b3ca7',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
+  label: {
     fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
+  },
+  valueBox: {
+    fontSize: 16,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: '#f1f1f1',
+    color: '#333',
   },
   counterContainer: {
     flexDirection: 'row',
@@ -223,24 +272,42 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   counterBtn: {
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-    paddingHorizontal: 15,
+    backgroundColor: '#dcd6f7',
+    borderRadius: 10,
+    paddingHorizontal: 18,
     paddingVertical: 10,
   },
+  counterText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4b3ca7',
+  },
   disabledBtn: {
-    opacity: 0.4,
+    opacity: 0.5,
   },
-  counterText: { fontSize: 18, fontWeight: 'bold' },
-  quantity: { fontSize: 18, fontWeight: 'bold' },
-  remaining: { marginTop: 8, fontSize: 14, color: '#555' },
+  quantity: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  remaining: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#666',
+  },
   btn: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: '#4b3ca7',
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 30,
   },
-  btnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   loading: {
     flex: 1,
     justifyContent: 'center',

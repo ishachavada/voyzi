@@ -1,14 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import AppText from './AppText';
+import { getDoc, getDocs, doc, query, collection, where } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 
 const EventDetails = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
   const event = route?.params?.event || {};
-  const isHouseFull = event.ticketCount <= 0;
+
+  const [availableTickets, setAvailableTickets] = useState(event.ticketCount || 0);
+
+  useEffect(() => {
+    const fetchAvailableTickets = async () => {
+      if (!event.id) return;
+
+      try {
+        const eventRef = doc(db, 'events', event.id);
+        const eventSnap = await getDoc(eventRef);
+        if (!eventSnap.exists()) return;
+
+        const eventData = eventSnap.data();
+        const totalTickets = Number(eventData.ticketCount || 0);
+
+        const bookingsQuery = query(
+          collection(db, 'bookings'),
+          where('eventId', '==', event.id)
+        );
+        const bookingSnap = await getDocs(bookingsQuery);
+
+        const ticketsSold = bookingSnap.docs.reduce(
+          (sum, doc) => sum + (doc.data().quantity || 0),
+          0
+        );
+
+        setAvailableTickets(Math.max(totalTickets - ticketsSold, 0));
+      } catch (err) {
+        console.error('Error fetching ticket availability:', err);
+      }
+    };
+
+    fetchAvailableTickets();
+  }, [event.id]);
+
+  const isHouseFull = availableTickets <= 0;
 
   const startDate = event.startDate instanceof Date
     ? event.startDate
@@ -17,12 +53,6 @@ const EventDetails = () => {
       : event.startDate?.seconds
         ? new Date(event.startDate.seconds * 1000)
         : new Date();
-
-  const eventDate = event.date
-    ? new Date(event.date)
-    : new Date();
-
-  const eventTime = event.time || '';
 
   const day = startDate.getDate();
   const month = startDate.toLocaleString('default', { month: 'short' });
@@ -87,12 +117,12 @@ const EventDetails = () => {
           <AppText
             style={[
               styles.ticketsLeft,
-              { color: event.ticketCount > 1 ? 'green' : 'red' },
+              { color: availableTickets > 1 ? 'green' : 'red' },
             ]}
           >
-            {event.ticketCount > 1
-              ? `${event.ticketCount} tickets available`
-              : event.ticketCount === 1
+            {availableTickets > 1
+              ? `${availableTickets} tickets available`
+              : availableTickets === 1
                 ? 'Only 1 ticket left'
                 : 'Sold Out'}
           </AppText>
@@ -149,7 +179,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 11,
     paddingVertical: 1,
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
   },
   infoCard: {
     backgroundColor: '#fff',
@@ -171,7 +201,6 @@ const styles = StyleSheet.create({
     color: 'black',
     flexWrap: 'wrap',
     maxWidth: '70%',
-
   },
   eventLocation: {
     fontSize: 14,
