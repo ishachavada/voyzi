@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#CBC3E3',
   },
   header: {
     fontSize: 22,
@@ -205,14 +206,14 @@ const styles = StyleSheet.create({
   },
   btn: {
     marginTop: 30,
-    backgroundColor: '#E0B0FF',
+    backgroundColor: '#800080',
     padding: 15,
     borderRadius: 10,
     width: '60%',
     alignItems: 'center',
   },
   btnText: {
-    color: '#800080',
+    color: '#FFFFFF',
     fontWeight: 'bold',
   },
 });
