@@ -96,7 +96,7 @@ const Confirmation = () => {
               month: 'short',
             }).toUpperCase()}
           </Text>
-          <Text style={styles.admit}>QTY: {ticketQty}</Text>
+          <Text style={styles.admit}>Allow: {ticketQty}</Text>
         </View>
 
         <View style={styles.section}>
@@ -159,16 +159,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#D72638',
+    color: '#800080',
+    marginTop: 30,
+    bold: true,
   },
   ticket: {
     width: '100%',
     borderWidth: 2,
-    borderColor: '#D72638',
-    backgroundColor: '#fff',
+    borderColor: '#800080',
+    backgroundColor: '#E6E6FA',
     borderRadius: 15,
     paddingVertical: 20,
     paddingHorizontal: 15,
+    bold: true,
     
   },
   section: {
@@ -178,7 +181,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#D72638',
+    color: '#800080',
+    bold: true,
     marginBottom: 5,
   },
   value: {
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
-    backgroundColor: '#D72638',
+    backgroundColor: '#BF40BF',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -201,14 +205,14 @@ const styles = StyleSheet.create({
   },
   btn: {
     marginTop: 30,
-    backgroundColor: '#007bff',
+    backgroundColor: '#E0B0FF',
     padding: 15,
     borderRadius: 10,
     width: '60%',
     alignItems: 'center',
   },
   btnText: {
-    color: '#fff',
+    color: '#800080',
     fontWeight: 'bold',
   },
 });
