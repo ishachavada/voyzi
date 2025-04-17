@@ -92,7 +92,7 @@ const HomeScreen = () => {
                     <AppText weight="bold" style={{ fontSize: 22 }}>{location}</AppText>
                   )}
                 </View>
-                <Ionicons name="notifications-outline" size={24} color="black" />
+                <Ionicons name="sparkles-outline" size={24} color="black" />
               </View>
 
               {/* Search bar */}
