@@ -106,7 +106,6 @@ const HomeScreen = () => {
                   onFocus={() => navigation.navigate('Search')} 
                 />
 
-                <MaterialIcons name="tune" size={20} color="black" />
               </View>
 
               {/* Categories */}
