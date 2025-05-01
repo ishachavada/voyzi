@@ -93,8 +93,14 @@ const Profile = () => {
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Ionicons name="home" size={24} color="black" />
           </TouchableOpacity>
-          <Ionicons name="heart-outline" size={24} color="black" />
-          <Ionicons name="person" size={24} color="black" />
+
+          <TouchableOpacity onPress={() => navigation.navigate('Favorites')}>
+            <Ionicons name="heart-outline" size={24} color="black" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Ionicons name="person" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </ImageBackground>

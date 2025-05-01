@@ -69,7 +69,7 @@ const ListEventForm = () => {
     };
 
     try {
-      await addDoc(collection(db, 'events'), newEvent,);
+      await addDoc(collection(db, 'events'), newEvent);
       Alert.alert('Success', 'Event listed successfully');
       navigation.navigate('Home');
     } catch (error) {
@@ -126,10 +126,10 @@ const ListEventForm = () => {
         <AppText style={styles.label}>Category</AppText>
         <View style={styles.pickerContainer}>
           <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)}>
-            <Picker.Item label="Music" value="music" />
-            <Picker.Item label="Gatherings" value="gatherings" />
-            <Picker.Item label="Art" value="art" />
-            <Picker.Item label="Comedy" value="comedy" />
+            <Picker.Item label="Music" value="Music" />
+            <Picker.Item label="Tech" value="Tech" />
+            <Picker.Item label="Art" value="Art" />
+            <Picker.Item label="Sports" value="Sports" />
           </Picker>
         </View>
 

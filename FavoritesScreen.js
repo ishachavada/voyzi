@@ -102,18 +102,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 70,
+    paddingTop: 60,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingVertical: 10,
     marginBottom: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 27,
     color: 'white',
     marginLeft: 10,
   },
