@@ -31,7 +31,7 @@ const SignUpScreen = () => {
       });
 
       Alert.alert('Account created successfully!');
-      navigation.navigate('LoginScreen');
+      navigation.navigate('Login');
     } catch (error) {
       Alert.alert('Signup Failed', error.message);
     }

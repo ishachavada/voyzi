@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, TextInput, TouchableOpacity, StyleSheet,
-  ImageBackground, Alert, SafeAreaView
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert, SafeAreaView } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
@@ -11,14 +8,18 @@ import { app } from './firebaseConfig';
 import AppText from './AppText';
 import { useUser } from './context/UserContext';
 
-
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
-  const { setUser } = useUser(); //
+  const { setUser } = useUser();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Validation error', 'Please enter both email and password');
+      return;
+    }
+
     const auth = getAuth();
     const db = getFirestore();
 
@@ -48,9 +49,20 @@ const LoginScreen = () => {
           photoURL: '',
         });
       }
+
+      // Navigate to the Home screen (or wherever you need to go after login)
+      navigation.navigate('Home');
     } catch (error) {
+      if (error.code === 'auth/invalid-email') {
+        Alert.alert('Invalid Email', 'Please provide a valid email address');
+      } else if (error.code === 'auth/user-not-found') {
+        Alert.alert('User Not Found', 'No user found with this email address');
+      } else if (error.code === 'auth/wrong-password') {
+        Alert.alert('Incorrect Password', 'The password you entered is incorrect');
+      } else {
+        Alert.alert('Login Failed', error.message);
+      }
       console.error(error);
-      Alert.alert('Login failed', error.message);
     }
   };
 
@@ -63,7 +75,6 @@ const LoginScreen = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.overlay}>
           <View style={styles.container}>
-
             <AppText weight="bold" style={styles.subtitle}>
               Sign in
             </AppText>
@@ -91,7 +102,6 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
               />
             </View>
-
 
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
               <AppText weight="semibold" style={styles.loginButtonText}>SIGN IN</AppText>
