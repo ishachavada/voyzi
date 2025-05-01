@@ -1,4 +1,3 @@
-// ... [imports remain the same]
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, ImageBackground, SafeAreaView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -72,7 +71,7 @@ const SignUpScreen = () => {
               placeholderTextColor="lightgray"
               value={password}
               onChangeText={setPassword}
-              secureTextEntrye
+              secureTextEntry={true} // Fixed the typo here
             />
 
 

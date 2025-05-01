@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "961032350119",
-    "project_id": "voyzi-b7eef",
-    "storage_bucket": "voyzi-b7eef.firebasestorage.app"
+    "project_number": "1090441995437",
+    "project_id": "voyzi-b26a9",
+    "storage_bucket": "voyzi-b26a9.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:961032350119:android:107f173df55d6b385aee82",
+        "mobilesdk_app_id": "1:1090441995437:android:b932a7db644afce87ed224",
         "android_client_info": {
-          "package_name": "com.voyzisignup"
+          "package_name": "com.voyzi.app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDzRBc3Kz-bVCGS6rW-jBIxN2r8efmFEOI"
+          "current_key": "AIzaSyCc6wz54j-rFgrirQ8Rl7pljxXvYxGN0to"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

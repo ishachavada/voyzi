@@ -6,12 +6,12 @@ import { getStorage } from 'firebase/storage';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDzRBc3Kz-bVCGS6rW-jBIxN2r8efmFEOI",
-  authDomain: "voyzi-b7eef.firebaseapp.com",
-  projectId: "voyzi-b7eef",
-  storageBucket: "voyzi-b7eef.appspot.com",
-  messagingSenderId: "961032350119",
-  appId: "1:961032350119:android:107f173df55d6b385aee82",
+  apiKey: "AIzaSyCc6wz54j-rFgrirQ8Rl7pljxXvYxGN0to",
+  authDomain: "voyzi-b26a9.firebaseapp.com",
+  projectId: "voyzi-b26a9",
+  storageBucket: "voyzi-b26a9.appspot.com",
+  messagingSenderId: "1090441995437",
+  appId: "1:1090441995437:android:b932a7db644afce87ed224",
 };
 
 

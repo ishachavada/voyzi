@@ -3,13 +3,23 @@
     "name": "VOYZI",
     "slug": "VOYZI",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
-      "googleServicesFile": "./google-services.json"
+      "package": "com.voyzi.app",
+      "googleServicesFile": "./google-services.json",
+      "newArchEnabled": true
     },
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "bundleIdentifier": "com.voyzi.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "newArchEnabled": true
     },
+    "plugins": [
+      "expo-firebase-core",
+      "expo-build-properties"
+    ],
     "extra": {
       "EXPO_CLIENT_ID": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",
       "ANDROID_CLIENT_ID": "961032350119-10lps0qlksqaj0aojbk7eejbc4ukdo16.apps.googleusercontent.com",

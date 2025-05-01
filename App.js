@@ -10,7 +10,6 @@ import {
 import Confirmation from './Confirmation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
 import HomeScreen from './HomeScreen';
@@ -24,11 +23,9 @@ import ManageYourEvents from './ManageYourEvents';
 import ModifyEvent from './ModifyEvent';
 import BookingScreen from './BookingScreen';
 import OTPVerification from './OTPVerification';
-import Confirmation from './Confirmation';
-import ManageBookings from './ManageBookings';
-import BookingDetails from './BookingDetails';
 import { UserProvider } from './context/UserContext';
 import ManageBookings from './ManageBookings';
+import SearchEvent from './SearchEvent';
 
 const Stack = createStackNavigator();
 
@@ -45,7 +42,10 @@ const App = () => {
   return (
     <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{ headerShown: false }}
+        >
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -60,6 +60,8 @@ const App = () => {
           <Stack.Screen name="BookingScreen" component={BookingScreen} />
           <Stack.Screen name="OTPVerification" component={OTPVerification} />
           <Stack.Screen name="ManageBookings" component={ManageBookings} />
+          <Stack.Screen name="Confirmation" component={Confirmation} />
+          <Stack.Screen name="Search" component={SearchEvent} />
         </Stack.Navigator>
         {/* </Stack.Navigator> */}
       </NavigationContainer>

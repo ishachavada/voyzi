@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40,
+    height: 50,
     color: 'rgba(21, 25, 111, 0.76)',
   },
   loginButton: {
