@@ -49,7 +49,7 @@ const LoginScreen = () => {
         });
       }
 
-      navigation.replace('Home'); 
+      navigation.replace('Home');
     } catch (error) {
       console.error(error);
       Alert.alert('Login failed', error.message);
@@ -65,9 +65,6 @@ const LoginScreen = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.overlay}>
           <View style={styles.container}>
-            {/* <AppText weight="bold" style={styles.title}>
-              VOYZI
-            </AppText> */}
 
             <AppText weight="bold" style={styles.subtitle}>
               Sign in
@@ -76,7 +73,7 @@ const LoginScreen = () => {
             <View style={styles.inputContainer}>
               <Icon name="envelope" size={20} color="#888" style={styles.icon} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, { fontFamily: 'Poppins_700Bold', color: 'white', fontSize: 16 }]}
                 placeholder="Email"
                 placeholderTextColor="white"
                 keyboardType="email-address"
@@ -88,7 +85,7 @@ const LoginScreen = () => {
             <View style={styles.inputContainer}>
               <Icon name="lock" size={20} color="#888" style={styles.icon} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, { fontFamily: 'Poppins_700Bold', color: 'white', fontSize: 16 }]}
                 placeholder="Password"
                 placeholderTextColor="white"
                 secureTextEntry
@@ -96,6 +93,7 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
               />
             </View>
+
 
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
               <AppText weight="semibold" style={styles.loginButtonText}>SIGN IN</AppText>
@@ -123,12 +121,11 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)', // Glass effect
+    backgroundColor: 'rgba(255, 255, 255, 0.08)', 
     padding: 24,
     borderRadius: 20,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -165,9 +162,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40,
-    color: 'rgba(0, 0, 0, 0.76)',
-    fontSize:18,
+    height: 50,
+    color: 'rgba(255, 255, 255, 0.76)',
+    fontSize: 18,
     alignContent: 'center',
   },
   loginButton: {

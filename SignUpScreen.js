@@ -4,8 +4,8 @@ import { View, TextInput, TouchableOpacity, Alert, ImageBackground, SafeAreaView
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from './firebaseConfig'; 
-import AppText from './AppText'; 
+import { auth, db } from './firebaseConfig';
+import AppText from './AppText';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -50,32 +50,32 @@ const SignUpScreen = () => {
             <AppText weight="bold" style={styles.subtitle}>Create Account</AppText>
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, { fontFamily: 'Poppins_700Bold', color: 'black', fontSize: 16 }]}
               placeholder="Username"
-              placeholderTextColor="gray"
+              placeholderTextColor="lightgray"
               value={username}
               onChangeText={setUsername}
             />
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, { fontFamily: 'Poppins_700Bold', color: 'black', fontSize: 16 }]}
               placeholder="Email"
-              placeholderTextColor="gray"
+              placeholderTextColor="lightgray"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
             />
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, { fontFamily: 'Poppins_700Bold', color: 'black', fontSize: 16 }]}
               placeholder="Password"
-              placeholderTextColor="gray"
+              placeholderTextColor="lightgray"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
 
-            
+
             <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
               <AppText weight="semibold" style={styles.signUpButtonText}>SIGN UP</AppText>
             </TouchableOpacity>
