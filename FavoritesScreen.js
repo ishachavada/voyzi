@@ -102,19 +102,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 70,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(209, 179, 212, 0.5)',
     borderRadius: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     paddingVertical: 10,
     marginBottom: 20,
   },
   title: {
-    fontSize: 22,
+    fontSize: 28,
     color: 'white',
     marginLeft: 10,
   },
