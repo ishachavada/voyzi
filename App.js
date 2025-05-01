@@ -7,7 +7,7 @@ import {
   Poppins_700Bold_Italic,
   Poppins_400Regular_Italic,
 } from '@expo-google-fonts/poppins';
-
+import Confirmation from './Confirmation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -28,13 +28,7 @@ import Confirmation from './Confirmation';
 import ManageBookings from './ManageBookings';
 import BookingDetails from './BookingDetails';
 import { UserProvider } from './context/UserContext';
-import { LogBox } from 'react-native';
-import ValidateTicket from './ValidateTicket'; 
-import SearchEvent from './SearchEvent';
-import FavoritesScreen from './FavoritesScreen';
-LogBox.ignoreLogs([
-  'Failed to initialize reCAPTCHA Enterprise config',
-]);
+import ManageBookings from './ManageBookings';
 
 const Stack = createStackNavigator();
 
@@ -66,12 +60,8 @@ const App = () => {
           <Stack.Screen name="BookingScreen" component={BookingScreen} />
           <Stack.Screen name="OTPVerification" component={OTPVerification} />
           <Stack.Screen name="ManageBookings" component={ManageBookings} />
-          <Stack.Screen name="BookingDetails" component={BookingDetails} />
-          <Stack.Screen name="Confirmation" component={Confirmation} />
-          <Stack.Screen name="ValidateTicket" component={ValidateTicket} /> 
-          <Stack.Screen name="Search" component={SearchEvent} />
-          <Stack.Screen name="Favorites" component={FavoritesScreen} />
         </Stack.Navigator>
+        {/* </Stack.Navigator> */}
       </NavigationContainer>
     </UserProvider>
   );

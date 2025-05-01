@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import maleAvatar from './assets/images/male.png';
 import femaleAvatar from './assets/images/female.png';
 import anonymousAvatar from './assets/images/OIP.jpeg';
-import bgImage from './assets/images/aa.jpg';
+import bgImage from './assets/images/oho.jpg';
 
 const Profile = () => {
   const navigation = useNavigation();

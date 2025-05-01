@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { db } from './firebaseConfig';
-import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import AppText from './AppText';
 import { MaterialIcons } from '@expo/vector-icons'; // <-- Make sure expo/vector-icons is installed
@@ -21,57 +21,20 @@ const ManageYourEvents = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const eventsRef = collection(db, 'events');
+        const querySnapshot = await getDocs(eventsRef);
+        const eventList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setEvents(eventList);
+      } catch (error) {
+        console.error('Error fetching events: ', error);
+        Alert.alert('Error', 'Failed to fetch events');
+      }
+    };
+
     fetchEvents();
   }, []);
-
-  const fetchEvents = async () => {
-    try {
-      const eventsRef = collection(db, 'events');
-      const eventSnap = await getDocs(eventsRef);
-      const eventsData = eventSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      const updatedEvents = await Promise.all(eventsData.map(async (event) => {
-        const bookingsRef = collection(db, 'bookings');
-        const bookingsQuery = query(bookingsRef, where('eventId', '==', event.id));
-        const bookingSnap = await getDocs(bookingsQuery);
-        const ticketsSold = bookingSnap.size;
-        return {
-          ...event,
-          ticketsSold,
-          ticketsLeft: event.ticketCount - ticketsSold,
-        };
-      }));
-
-      setEvents(updatedEvents);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching events/bookings:', error);
-      Alert.alert('Error', 'Failed to fetch event data.');
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteEvent = async (eventId) => {
-    try {
-      await deleteDoc(doc(db, 'events', eventId));
-      setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
-      Alert.alert('Success', 'Event deleted successfully.');
-    } catch (error) {
-      console.error('Delete error:', error);
-      Alert.alert('Error', 'Failed to delete event.');
-    }
-  };
-
-  const confirmDelete = (eventId) => {
-    Alert.alert(
-      'Delete Event',
-      'Are you sure you want to delete this event?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => handleDeleteEvent(eventId) },
-      ]
-    );
-  };
 
   const handleModifyEvent = (eventId) => {
     navigation.navigate('ModifyEvent', { eventId });

@@ -177,9 +177,11 @@ const styles = StyleSheet.create({
     right: 19,
     bottom: 1,
     color: '#fff',
-    fontSize: 11,
-    paddingVertical: 1,
+    fontSize: 12,
+    backgroundColor: '#000',
+    paddingVertical: 5,
     paddingHorizontal: 10,
+    borderRadius: 15,
   },
   infoCard: {
     backgroundColor: '#fff',

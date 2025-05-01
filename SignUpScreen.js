@@ -72,7 +72,7 @@ const SignUpScreen = () => {
               placeholderTextColor="lightgray"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntrye
             />
 
 

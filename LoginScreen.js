@@ -48,8 +48,6 @@ const LoginScreen = () => {
           photoURL: '',
         });
       }
-
-      navigation.replace('Home');
     } catch (error) {
       console.error(error);
       Alert.alert('Login failed', error.message);
@@ -162,10 +160,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 50,
-    color: 'rgba(255, 255, 255, 0.76)',
-    fontSize: 18,
-    alignContent: 'center',
+    height: 40,
+    color: 'rgba(21, 25, 111, 0.76)',
   },
   loginButton: {
     backgroundColor: '#00C9FF',

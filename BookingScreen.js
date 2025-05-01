@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {
   getDoc,
@@ -39,6 +32,7 @@ const BookingScreen = () => {
       try {
         const currentUser = auth.currentUser;
         if (!currentUser) {
+          console.log('No authenticated user found.');
           setLoading(false);
           return;
         }
@@ -53,92 +47,20 @@ const BookingScreen = () => {
       }
     };
 
-    const fetchTickets = async () => {
-      try {
-        const eventRef = doc(db, 'events', eventData.id);
-        const eventSnap = await getDoc(eventRef);
-        if (!eventSnap.exists()) return;
-
-        const event = eventSnap.data();
-        const totalTickets = Number(event.ticketCount || 0);
-
-        const bookingQuery = query(
-          collection(db, 'bookings'),
-          where('eventId', '==', eventData.id)
-        );
-        const bookingsSnap = await getDocs(bookingQuery);
-        const booked = bookingsSnap.docs.reduce(
-          (sum, doc) => sum + (doc.data().quantity || 0),
-          0
-        );
-
-        setAvailable(Math.max(totalTickets - booked, 0));
-      } catch (err) {
-        console.error('Error fetching tickets:', err);
-      }
-    };
-
     fetchUserData();
     fetchTickets();
   }, []);
 
-  const increase = () => {
-    if (quantity < available) setQuantity((q) => q + 1);
-  };
+  const increase = () => setQuantity(q => q + 1);
+  const decrease = () => setQuantity(q => (q > 1 ? q - 1 : 1));
 
-  const decrease = () => {
-    if (quantity > 1) setQuantity((q) => q - 1);
-  };
-
-  const handleBookingConfirm = async () => {
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) throw new Error('User not logged in');
-
-      const eventRef = doc(db, 'events', eventData.id);
-      const eventSnap = await getDoc(eventRef);
-      if (!eventSnap.exists()) throw new Error('Event not found');
-
-      const event = eventSnap.data();
-      const total = Number(event.ticketCount || 0);
-
-      const bookingQuery = query(
-        collection(db, 'bookings'),
-        where('eventId', '==', eventData.id)
-      );
-      const bookingSnap = await getDocs(bookingQuery);
-      const sold = bookingSnap.docs.reduce(
-        (sum, doc) => sum + (doc.data().quantity || 0),
-        0
-      );
-      const left = total - sold;
-
-      if (left < quantity) {
-        Alert.alert('Not enough tickets available.');
-        return;
-      }
-
-      const totalCost = quantity * ticketCost;
-
-      const bookingData = {
-        userId: currentUser.uid,
-        eventId: eventData.id || 'unknown',
-        eventName: eventData?.eventName || 'Unknown Event',
-        quantity,
-        totalCost,
-        timestamp: Timestamp.now(),
-      };
-
-      const bookingRef = await addDoc(collection(db, 'bookings'), bookingData);
-
-      navigation.navigate('Confirmation', {
-        bookingId: bookingRef.id,
-        ...bookingData,
-      });
-    } catch (err) {
-      console.error('Booking failed:', err);
-      Alert.alert('Booking failed. Please try again.');
-    }
+  const proceedToOtp = () => {
+    navigation.navigate('OTPVerification', {
+      user,
+      eventData,
+      quantity,
+      totalCost,
+    });
   };
 
   if (!eventData) {
@@ -175,47 +97,36 @@ const BookingScreen = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.title}>🎫 Book Tickets for {eventData.eventName}</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>👤 Name</Text>
-        <Text style={styles.valueBox}>{user.name || 'N/A'}</Text>
+      {/* User Info */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Name</Text>
+        <Text style={styles.box}>{user.name || 'N/A'}</Text>
+
+        <Text style={styles.label}>Age</Text>
+        <Text style={styles.box}>{user.age || 'N/A'}</Text>
+
+        <Text style={styles.label}>Address</Text>
+        <Text style={styles.box}>{user.address || 'N/A'}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>🎂 Age</Text>
-        <Text style={styles.valueBox}>{user.age || 'N/A'}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>📍 Address</Text>
-        <Text style={styles.valueBox}>{user.address || 'N/A'}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>🎟️ Select Tickets</Text>
+      {/* Ticket Selector */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Select Tickets</Text>
         <View style={styles.counterContainer}>
           <TouchableOpacity style={styles.counterBtn} onPress={decrease}>
             <Text style={styles.counterText}>−</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>{quantity}</Text>
-          <TouchableOpacity
-            style={[styles.counterBtn, quantity >= available && styles.disabledBtn]}
-            onPress={increase}
-            disabled={quantity >= available}
-          >
-            <Text style={styles.counterText}>＋</Text>
+          <TouchableOpacity style={styles.counterBtn} onPress={increase}>
+            <Text style={styles.counterText}>+</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.remaining}>Available: {available}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>💰 Ticket Price</Text>
-        <Text style={styles.valueBox}>₹{ticketCost}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>🧾 Total</Text>
-        <Text style={styles.valueBox}>₹{totalCost}</Text>
+      {/* Bill Summary */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Ticket Price: ₹{ticketCost}</Text>
+        <Text style={styles.label}>Total: ₹{totalCost}</Text>
       </View>
 
       <TouchableOpacity style={styles.btn} onPress={handleBookingConfirm}>
@@ -226,40 +137,16 @@ const BookingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#eae6f7',
-    paddingHorizontal: 20,
-  },
-  scrollContent: {
-    paddingBottom: 30,
-    paddingTop: 50,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    textAlign: 'center',
-    color: '#4b3ca7',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 4,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
-  valueBox: {
+  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
+  section: { marginBottom: 20 },
+  label: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
+  box: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 10,
     fontSize: 16,
     padding: 12,
     borderRadius: 10,
@@ -277,24 +164,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
   },
-  counterText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4b3ca7',
-  },
-  disabledBtn: {
-    opacity: 0.5,
-  },
-  quantity: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  remaining: {
-    marginTop: 10,
-    fontSize: 14,
-    color: '#666',
-  },
+  counterText: { fontSize: 18, fontWeight: 'bold' },
+  quantity: { fontSize: 18, fontWeight: 'bold' },
   btn: {
     backgroundColor: '#4b3ca7',
     padding: 16,
