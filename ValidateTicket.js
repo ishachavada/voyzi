@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
-import { db } from './firebaseConfig'; // Import Firebase config
-import { collection, query, where, getDocs } from 'firebase/firestore'; // Updated imports for querying
+import { View, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { db } from './firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import AppText from './AppText';
 
 const ValidateTicket = ({ route }) => {
-  const eventId = route?.params?.eventId; // Event ID from route (for validation purposes)
+  const eventId = route?.params?.eventId;
   const [transactionId, setTransactionId] = useState('');
   const [bookingData, setBookingData] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -17,10 +18,9 @@ const ValidateTicket = ({ route }) => {
     const trimmedTransactionId = transactionId.trim();
 
     try {
-      // Step 1: Query the bookings collection for the transactionId
       const q = query(
-        collection(db, 'bookings'), // Specify the 'bookings' collection
-        where('transactionId', '==', trimmedTransactionId) // Search by the transactionId
+        collection(db, 'bookings'),
+        where('transactionId', '==', trimmedTransactionId)
       );
 
       const querySnapshot = await getDocs(q);
@@ -29,27 +29,22 @@ const ValidateTicket = ({ route }) => {
         setBookingData(null);
         setUserData(null);
         Alert.alert('Invalid Transaction', 'No booking found with this ID.');
-        console.log('Transaction not found in bookings:', trimmedTransactionId);
         return;
       }
 
-      // Step 2: Retrieve the first matching booking data
       const bookingDoc = querySnapshot.docs[0];
       const booking = bookingDoc.data();
 
-      // Step 3: Validate the eventId against the one stored in the booking (optional if required)
       if (eventId && booking.eventId !== eventId) {
         setBookingData(null);
         setUserData(null);
         Alert.alert('Event Mismatch', 'The event ID does not match the booking.');
-        console.log('Event mismatch for transaction:', trimmedTransactionId);
         return;
       }
 
-      // Step 4: Store and display the booking data if valid
       setBookingData({
         transactionId: trimmedTransactionId,
-        ...booking, // Include all booking fields like name, tickets, etc.
+        ...booking,
       });
 
       setUserData({
@@ -58,9 +53,6 @@ const ValidateTicket = ({ route }) => {
         mobile: booking.userMobile || 'Not provided',
       });
 
-      console.log('Booking data found:', booking);
-
-      // Step 5: Show a success alert
       Alert.alert('Ticket Validated', 'Ticket validated successfully!');
     } catch (error) {
       console.error('Error validating transaction:', error);
@@ -70,33 +62,35 @@ const ValidateTicket = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Manual Ticket Validation</Text>
+      <View style={styles.centerBox}>
+        <AppText style={styles.title}>Manual Ticket Validation</AppText>
 
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Enter Transaction ID</Text>
-        <TextInput
-          style={styles.input}
-          value={transactionId}
-          onChangeText={setTransactionId}
-          placeholder="e.g. TXN12345678"
-          autoCapitalize="none"
-        />
-      </View>
-
-      <TouchableOpacity style={styles.validateButton} onPress={validateTransaction}>
-        <Text style={styles.buttonText}>Validate</Text>
-      </TouchableOpacity>
-
-      {bookingData && (
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailsTitle}>Booking Details</Text>
-          <Text>Name: {userData?.name || 'Not found'}</Text>
-          <Text>Email: {userData?.email || 'Not found'}</Text>
-          <Text>Contact: {userData?.mobile || 'Not found'}</Text>
-          <Text>No. of People: {bookingData.ticketsBooked}</Text>
-          <Text>Transaction ID: {bookingData.transactionId}</Text>
+        <View style={styles.inputSection}>
+          <AppText style={styles.label}>Enter Transaction ID</AppText>
+          <TextInput
+            style={styles.input}
+            value={transactionId}
+            onChangeText={setTransactionId}
+            placeholder="e.g. TXN12345678"
+            autoCapitalize="none"
+          />
         </View>
-      )}
+
+        <TouchableOpacity style={styles.validateButton} onPress={validateTransaction}>
+          <AppText style={styles.buttonText}>Validate</AppText>
+        </TouchableOpacity>
+
+        {bookingData && (
+          <View style={styles.detailsBox}>
+            <AppText style={styles.detailsTitle}>Booking Details</AppText>
+            <AppText>Name: {userData?.name || 'Not found'}</AppText>
+            <AppText>Email: {userData?.email || 'Not found'}</AppText>
+            <AppText>Contact: {userData?.mobile || 'Not found'}</AppText>
+            <AppText>No. of People: {bookingData.ticketsBooked}</AppText>
+            <AppText>Transaction ID: {bookingData.transactionId}</AppText>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
@@ -106,16 +100,23 @@ export default ValidateTicket;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
     backgroundColor: '#f4eef6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  centerBox: {
+    width: '100%',
+    alignItems: 'center',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 12,
+    marginBottom: 24,
   },
   inputSection: {
+    width: '100%',
     marginBottom: 16,
   },
   label: {
@@ -135,6 +136,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    marginTop: 8,
+    width: '100%',
   },
   buttonText: {
     color: '#fff',
@@ -145,6 +148,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#eee',
     borderRadius: 10,
+    width: '100%',
   },
   detailsTitle: {
     fontSize: 18,
