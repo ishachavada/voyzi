@@ -101,17 +101,12 @@ const ManageYourEvents = () => {
 
       <TouchableOpacity
         style={styles.secondaryButton}
-        onPress={() => navigation.navigate('ValidateTicket', { eventId: item.id })}
+        onPress={() => navigation.navigate('ValidateTicket', { eventId: item.transactionId })}
       >
         <AppText style={styles.secondaryButtonText}>Validate Ticket</AppText>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.secondaryButton}
-        onPress={() => navigation.navigate('EventAnalytics', { eventId: item.id })}
-      >
-        <AppText style={styles.secondaryButtonText}>Analytics</AppText>
-      </TouchableOpacity>
+    
     </View>
   );
 

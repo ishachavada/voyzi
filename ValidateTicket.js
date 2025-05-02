@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { db } from './firebaseConfig'; // Import Firebase config
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore'; // Updated imports for querying
 
 const ValidateTicket = ({ route }) => {
   const eventId = route?.params?.eventId; // Event ID from route (for validation purposes)
@@ -16,46 +16,56 @@ const ValidateTicket = ({ route }) => {
 
     const trimmedTransactionId = transactionId.trim();
 
-    // Step 1: Fetch the booking data using the transactionId
-    const transactionRef = doc(db, 'bookings', trimmedTransactionId);
-    const snap = await getDoc(transactionRef);
+    try {
+      // Step 1: Query the bookings collection for the transactionId
+      const q = query(
+        collection(db, 'bookings'), // Specify the 'bookings' collection
+        where('transactionId', '==', trimmedTransactionId) // Search by the transactionId
+      );
 
-    if (!snap.exists()) {
-      setBookingData(null);
-      setUserData(null);
-      Alert.alert('Invalid Transaction', 'No booking found with this ID.');
-      console.log('Transaction not found in bookings:', trimmedTransactionId);
-      return;
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        setBookingData(null);
+        setUserData(null);
+        Alert.alert('Invalid Transaction', 'No booking found with this ID.');
+        console.log('Transaction not found in bookings:', trimmedTransactionId);
+        return;
+      }
+
+      // Step 2: Retrieve the first matching booking data
+      const bookingDoc = querySnapshot.docs[0];
+      const booking = bookingDoc.data();
+
+      // Step 3: Validate the eventId against the one stored in the booking (optional if required)
+      if (eventId && booking.eventId !== eventId) {
+        setBookingData(null);
+        setUserData(null);
+        Alert.alert('Event Mismatch', 'The event ID does not match the booking.');
+        console.log('Event mismatch for transaction:', trimmedTransactionId);
+        return;
+      }
+
+      // Step 4: Store and display the booking data if valid
+      setBookingData({
+        transactionId: trimmedTransactionId,
+        ...booking, // Include all booking fields like name, tickets, etc.
+      });
+
+      setUserData({
+        name: booking.userName,
+        email: booking.userEmail,
+        mobile: booking.userMobile || 'Not provided',
+      });
+
+      console.log('Booking data found:', booking);
+
+      // Step 5: Show a success alert
+      Alert.alert('Ticket Validated', 'Ticket validated successfully!');
+    } catch (error) {
+      console.error('Error validating transaction:', error);
+      Alert.alert('Error', 'An error occurred while validating the transaction.');
     }
-
-    // Step 2: Retrieve the booking data from Firestore
-    const booking = snap.data();
-
-    // Step 3: Validate the eventId against the one stored in the booking
-    if (booking.eventId !== eventId) {
-      setBookingData(null);
-      setUserData(null);
-      Alert.alert('Event Mismatch', 'The event ID does not match the booking.');
-      console.log('Event mismatch for transaction:', trimmedTransactionId);
-      return;
-    }
-
-    // Step 4: Store and display the booking data if valid
-    setBookingData({
-      transactionId: trimmedTransactionId,
-      ...booking, // Include all booking fields like name, tickets, etc.
-    });
-
-    setUserData({
-      name: booking.userName,
-      email: booking.userEmail,
-      mobile: booking.userMobile || 'Not provided',
-    });
-
-    console.log('Booking data found:', booking);
-
-    // Step 5: Show a success alert
-    Alert.alert('Success', 'Ticket validated successfully!');
   };
 
   return (
@@ -85,8 +95,6 @@ const ValidateTicket = ({ route }) => {
           <Text>Contact: {userData?.mobile || 'Not found'}</Text>
           <Text>No. of People: {bookingData.ticketsBooked}</Text>
           <Text>Transaction ID: {bookingData.transactionId}</Text>
-
-         
         </View>
       )}
     </View>

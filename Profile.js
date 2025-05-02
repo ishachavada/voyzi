@@ -21,7 +21,9 @@ import bgImage from './assets/images/oho.jpg';
 
 const Profile = () => {
   const navigation = useNavigation();
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
+  const { user } = useUser;
+
   const [currentUser, setCurrentUser] = useState(user);
 
   useEffect(() => {

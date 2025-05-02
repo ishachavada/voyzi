@@ -27,6 +27,8 @@ import { UserProvider } from './context/UserContext';
 import ManageBookings from './ManageBookings';
 import SearchEvent from './SearchEvent';
 import FavoritesScreen from './FavoritesScreen';
+import ValidateTicket from './ValidateTicket';
+import Bookings from './Bookings';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -63,8 +65,8 @@ const App = () => {
           <Stack.Screen name="Confirmation" component={Confirmation} />
           <Stack.Screen name="Search" component={SearchEvent} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
-          
-
+          <Stack.Screen name="Bookings" component={Bookings} />
+          <Stack.Screen name="ValidateTicket" component={ValidateTicket} />
         </Stack.Navigator>
         {/* </Stack.Navigator> */}
       </NavigationContainer>

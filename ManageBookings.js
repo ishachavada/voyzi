@@ -1,22 +1,42 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { db } from './firebaseConfig';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from 'firebase/firestore';
 import { useUser } from './context/UserContext';
-
+import AppText from './AppText';  
 const ManageBookings = () => {
   const navigation = useNavigation();
-  const { user } = useUser;
+  const { user } = useUser();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!user?.uid) return;
+      if (!user || !user.uid) {
+        setLoading(false);
+        return;
+      }
 
       try {
-        const q = query(collection(db, 'bookings'), where('userId', '==', user.uid));
+        const q = query(
+          collection(db, 'bookings'),
+          where('userId', '==', user.uid)
+        );
         const querySnapshot = await getDocs(q);
 
         const bookingsWithEventData = await Promise.all(
@@ -24,6 +44,7 @@ const ManageBookings = () => {
             const booking = docSnap.data();
             const eventDoc = await getDoc(doc(db, 'events', booking.eventId));
             const eventData = eventDoc.exists() ? eventDoc.data() : {};
+
             return {
               id: docSnap.id,
               ...booking,
@@ -33,9 +54,10 @@ const ManageBookings = () => {
         );
 
         setBookings(bookingsWithEventData);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching bookings:', error);
+        Alert.alert('Error', 'Could not fetch bookings.');
+      } finally {
         setLoading(false);
       }
     };
@@ -46,7 +68,7 @@ const ManageBookings = () => {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#6200ee" />
       </View>
     );
   }
@@ -54,7 +76,7 @@ const ManageBookings = () => {
   if (bookings.length === 0) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.emptyText}>No bookings found.</Text>
+        <AppText style={styles.emptyText}>No bookings found.</AppText>
       </View>
     );
   }
@@ -62,29 +84,48 @@ const ManageBookings = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate('BookingDetails', { booking: item })}
+      onPress={() => navigation.navigate('Bookings', { booking: item })}
     >
-      <Text style={styles.eventName}>{item.event.eventName || 'Event Name'}</Text>
-      <Text>Date: {item.event.startDate || 'N/A'}</Text>
-      <Text>Location: {item.event.location || 'N/A'}</Text>
-      <Text>Tickets: {item.ticketCount}</Text>
-      <Text>Total Paid: ₹{item.totalAmount}</Text>
+      <AppText weight='bold' style={styles.eventName}>
+        {item.event.name || 'Event Name'}
+      </AppText>
+      <AppText style={styles.ticketCount}>
+        Tickets Booked: {item.quantity || 0}
+      </AppText>
     </TouchableOpacity>
   );
 
   return (
-    <FlatList
-      data={bookings}
-      keyExtractor={(item) => item.id}
-      renderItem={renderItem}
-      contentContainerStyle={styles.container}
-    />
+    <View style={styles.container}>
+      <AppText weight='bold' style={styles.header}>Manage Your Bookings</AppText>
+      <FlatList
+        data={bookings}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
+    paddingTop:35,
+    paddingBottom:15,
+    backgroundColor: 'rgba(165, 130, 188, 0.47)',
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 40, // Adding upper margin
+    marginBottom: 20, // Space between header and list
+    textAlign: 'center',
+  },
+  listContainer: {
+    paddingBottom: 16,
   },
   centered: {
     flex: 1,
@@ -93,18 +134,31 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#888',
+    color: '#999',
   },
   card: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    marginBottom: 12,
-    elevation: 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
   eventName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#1e1e1e',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ticketCount: {
+    fontSize: 16,
+    color: '#444',
+    textAlign: 'center',
   },
 });
 
