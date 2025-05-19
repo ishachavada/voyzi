@@ -27,7 +27,6 @@ const LoginScreen = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Fetching user details from Firestore
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
@@ -50,7 +49,7 @@ const LoginScreen = () => {
         });
       }
 
-      // Navigate to the Home screen (or wherever you need to go after login)
+      
       navigation.navigate('Home');
     } catch (error) {
       if (error.code === 'auth/invalid-email') {

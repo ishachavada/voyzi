@@ -2,12 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet, ScrollView } from 'react-native';
 import { db } from './firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
-import AppText from './AppText';  
+import AppText from './AppText';
 
-const BookingDetails = ({ route }) => {
+const BookingDetails = ({ route, navigation }) => {
   const { booking } = route.params;
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Prevent showing this screen if booking is invalid or empty
+  if (!booking || booking.ticketsBooked === 0) {
+    return (
+      <View style={styles.errorContainer}>
+        <AppText style={styles.errorText}>Invalid or empty booking.</AppText>
+      </View>
+    );
+  }
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -17,9 +26,12 @@ const BookingDetails = ({ route }) => {
 
         if (eventSnap.exists()) {
           setEventData(eventSnap.data());
+        } else {
+          setEventData(null);
         }
       } catch (error) {
         console.error('Error fetching event:', error);
+        setEventData(null);
       } finally {
         setLoading(false);
       }
@@ -28,9 +40,17 @@ const BookingDetails = ({ route }) => {
     fetchEventDetails();
   }, []);
 
-  if (loading) return <ActivityIndicator style={styles.loading} size="large" color="#6200ee" />;
+  if (loading) {
+    return <ActivityIndicator style={styles.loading} size="large" color="#6200ee" />;
+  }
 
-  if (!eventData) return <AppText style={styles.errorText}>Event not found</AppText>;
+  if (!eventData) {
+    return (
+      <View style={styles.errorContainer}>
+        <AppText style={styles.errorText}>This event no longer exists.</AppText>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -39,10 +59,10 @@ const BookingDetails = ({ route }) => {
         <AppText style={styles.subtitle}>Booking Details</AppText>
         <View style={styles.detailsContainer}>
           <View style={styles.detailBox}>
-            <AppText style={styles.text}>Tickets Booked: {booking.quantity}</AppText>
+            <AppText style={styles.text}>Tickets Booked: {booking.ticketsBooked}</AppText>
           </View>
           <View style={styles.detailBox}>
-            <AppText style={styles.text}>Total Paid: ₹{booking.totalCost}</AppText>
+            <AppText style={styles.text}>Total Paid: ₹{booking.totalAmount}</AppText>
           </View>
           <View style={styles.detailBox}>
             <AppText style={styles.text}>Event Date: {new Date(eventData.date?.seconds * 1000).toLocaleDateString()}</AppText>
@@ -74,16 +94,21 @@ const styles = StyleSheet.create({
   loading: {
     marginTop: 50,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
   errorText: {
     textAlign: 'center',
-    marginTop: 50,
     fontSize: 16,
     color: '#ff6b6b',
   },
   container: {
     padding: 20,
     paddingTop: 50,
-    backgroundColor: '#ffffff', // Keeping the container's background white
+    backgroundColor: '#ffffff',
     borderRadius: 15,
     marginHorizontal: 40,
     marginBottom: 50,
@@ -114,7 +139,7 @@ const styles = StyleSheet.create({
   },
   detailBox: {
     marginBottom: 15,
-    backgroundColor: '#f1f1f1', // Keeping the details box light
+    backgroundColor: '#f1f1f1',
     padding: 15,
     borderRadius: 10,
     shadowColor: '#000',

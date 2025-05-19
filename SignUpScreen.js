@@ -71,7 +71,7 @@ const SignUpScreen = () => {
               placeholderTextColor="lightgray"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry={true} // Fixed the typo here
+              secureTextEntry={true} 
             />
 
 

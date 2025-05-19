@@ -90,7 +90,7 @@ const ManageBookings = () => {
         {item.event.name || 'Event Name'}
       </AppText>
       <AppText style={styles.ticketCount}>
-        Tickets Booked: {item.quantity || 0}
+        Tickets Booked: {item.ticketsBooked || 0}
       </AppText>
     </TouchableOpacity>
   );
